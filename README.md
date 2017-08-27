@@ -8,6 +8,8 @@ add_access_rule - demonstrates a basic flow of using the APIs: performs a login 
 
 clone_host - 
 
+discard_sessions - 
+
 find_duplicate_ip - demonstrates searching for all the hosts that share the same IP address.
 
 ## Development Environment
