@@ -13,4 +13,4 @@ discard_sessions - demonstrates how to discard the changes to the database for u
 find_duplicate_ip - demonstrates searching for all the hosts that share the same IP address.
 
 ## Development Environment
-The kit is developed using Python language version 2.7.
+The kit is developed using Python language version 2.7.9
