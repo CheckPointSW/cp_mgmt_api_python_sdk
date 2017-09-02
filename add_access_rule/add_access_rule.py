@@ -16,14 +16,16 @@
 # July 2016
 #
 
-# A package for reading passwords without displaying them on the console.
 from __future__ import print_function
 
+# A package for reading passwords without displaying them on the console.
 import getpass
-import sys
 
-# cp_management_api is a package that handles the communication with the Check Point management server.
-from mgmt_api_lib import *
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# lib is a library that handles the communication with the Check Point management server.
+from lib import APIClient, APIClientArgs
 
 
 def main():

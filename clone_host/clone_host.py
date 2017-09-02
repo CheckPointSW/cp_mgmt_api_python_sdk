@@ -18,13 +18,14 @@
 from __future__ import print_function
 
 import argparse
-import getpass
-import sys
-
-from mgmt_api_lib import mgmt_api
-
-# cp_management_api is a package that handles the communication with the Check Point management server.
 # A package for reading passwords without displaying them on the console.
+import getpass
+
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# lib is a library that handles the communication with the Check Point management server.
+from lib import APIClient, APIClientArgs
 
 global_domain_cloned_host_uid = None
 log_file = ""
