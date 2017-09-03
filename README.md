@@ -1,4 +1,4 @@
-# cpapi-python-sdk
+# cp_mgmt_api_python_sdk
 Check Point API Python Development Kit simplifies the usage of the Check Point R80.10 Management APIs. The kit contains the API library project, and sample projects demonstrating the capabilities of the library.
 
 ## Content
