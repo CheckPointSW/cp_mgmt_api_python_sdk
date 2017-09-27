@@ -379,7 +379,7 @@ class APIClient:
         payload.update({"limit": limit, "offset": iterations * limit, "details-level": details_level})
         api_res = self.api_call(command, payload)
         for container_key in container_keys:
-            if container_key not in api_res.data or not isinstance(api_res.data[container_key], list) \
+            if not api_res.data or container_key not in api_res.data or not isinstance(api_res.data[container_key], list) \
                     or "total" not in api_res.data or api_res.data["total"] == 0:
                 finished = True
                 yield api_res
