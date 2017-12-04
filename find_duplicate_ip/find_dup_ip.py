@@ -1,11 +1,12 @@
 #
 # findDupIP.py
-# version 1.0
+# version 1.1
 #
 #
 # Look for duplicate IP addresses in all the host objects.
-# written by: Check Point software technologies inc. 
+# Written by: Check Point Software Technologies inc. 
 # December 2015
+# Updated: December 2017 for R80.10 API version
 #
 
 
@@ -52,7 +53,8 @@ def main():
             exit(1)
 
         # show hosts
-        show_hosts_res = client.api_query("show-hosts", "full")
+        print("Processing. Please wait...")
+        show_hosts_res = client.api_query("show-hosts", "standard")
         if show_hosts_res.success is False:
             print("Failed to get the list of all host objects: {}".format(show_hosts_res.error_message))
             exit(1)
@@ -64,7 +66,10 @@ def main():
     dup_ip_set = set()
 
     for host in show_hosts_res.data:
-        ipaddr = host["ipv4-address"]
+        ipaddr = host.get("ipv4-address")
+        if ipaddr is None:
+            print(host["name"] + " has no IPv4 address. Skipping...")
+            continue
         host_data = {"name": host["name"], "uid": host["uid"]}
         if ipaddr in obj_dictionary:
             dup_ip_set.add(ipaddr)
