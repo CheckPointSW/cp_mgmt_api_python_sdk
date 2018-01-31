@@ -31,7 +31,7 @@ global_domain_cloned_host_uid = None
 log_file = ""
 
 
-def create_host(api_client, orig_host_uid, cloned_host_name, cloned_host_ip):
+def create_host(api_client, orig_host_name, orig_host_uid, cloned_host_name, cloned_host_ip):
     """
     Create a new host object with 'new_host_name' as its name and 'new_host_ip_address' as its IP-address.
     The new host's color and comments will be copied from the the "orig_host" object.
@@ -42,6 +42,7 @@ def create_host(api_client, orig_host_uid, cloned_host_name, cloned_host_ip):
     :return: the cloned host uid on success, otherwise None
     """
     # get details of the original host object
+    log("\n\tGathering information for host {}".format(orig_host_name))
     res = api_client.api_call("show-host", {"uid": orig_host_uid})
     if res.success is False:
         discard_write_to_log_file(api_client, "Failed to open existing host: {}. Aborting.".format(res.error_message))
@@ -51,11 +52,10 @@ def create_host(api_client, orig_host_uid, cloned_host_name, cloned_host_ip):
     color = res.data["color"]
     comments = res.data["comments"]
 
-    # create the new host object
-    log("\n\tCreating new host {}".format(cloned_host_name))
+    # create a new host object
+    log("\n\tCreating a new host {}".format(cloned_host_name))
     res = api_client.api_call("add-host", {"name": cloned_host_name, "ip-address": cloned_host_ip,
                                            "color": color, "comments": comments})
-
     if res.success is False:
         discard_write_to_log_file(api_client, "Failed to create the new host: {}. Aborting.".format(res.error_message))
         return None
@@ -65,17 +65,16 @@ def create_host(api_client, orig_host_uid, cloned_host_name, cloned_host_ip):
 
 def find_host_uid_if_exist(api_client, cloned_host_name, cloned_host_ip):
     """
-    This method checks if the new host is already exists, if so the method returns the tuple uid and status
+    This method checks if the new host already exists, and if so the method returns the tuple uid and status
     :param api_client: Api client of the domain
     :param cloned_host_name: cloned host name
     :param cloned_host_ip: cloned host IP
     :return: True if the host doesn't exist
              False if error occurred
-             UID if the host already exist and the uid is the uid of the existing host
+             UID if the host already exists, and the uid is the same uid of the existing host
     """
-    # check if the host already exists find the host uid
+    # check if the host already exists, find the host uid
     res = api_client.api_call("show-host", {"name": cloned_host_name})
-
     if res.success is False:
         if "code" in res.data and "generic_err_object_not_found" == res.data["code"]:
             return True
@@ -88,20 +87,19 @@ def find_host_uid_if_exist(api_client, cloned_host_name, cloned_host_ip):
         log("\n\tThe host with the same name and IP already exists,\n\t"
             "going to copy it to the same places as the original host")
         return res.data["uid"]
-
     else:
         discard_write_to_log_file(api_client, "A host with the same name but a different IP address "
-                                              "already exists, discarding all the changes")
+                                              "already exists, discarding all changes")
         return False
 
 
 def copy_reference(api_client, new_host_uid, new_host_name, where_used_data, is_global_domain):
     """
-    Add new_host to the same groups and access-rules and NAT and threat that orig_host belongs to
+    Add new_host to the same groups, access-rules, NAT-rules, and threat-rules that orig_host belongs to
     :param api_client: APi client of the domain
     :param new_host_uid: cloned host uid
     :param new_host_name: cloned host name
-    :param where_used_data: the data returned from where-used on the original host
+    :param where_used_data: the data returned from where-used for the original host
     :param is_global_domain: True if the domain is global
     :return: True on success, otherwise False
     """
@@ -110,25 +108,21 @@ def copy_reference(api_client, new_host_uid, new_host_name, where_used_data, is_
     # handle group objects
     if where_used_data["objects"]:
         for obj in where_used_data["objects"]:
-
             if obj["type"] == "group":
-                # in case we connect to local domain and the group is a global group continue
+                # in case we connect to local domain and the group is a global group, skip
                 if not is_global_domain and obj["domain"]["domain-type"] == "global domain":
                     continue
-
                 log("\t\tGroup: " + obj["name"])
                 res = api_client.api_call("set-group", {"name": obj["name"], "members": {"add": new_host_uid}})
-
                 if res.success is False:
                     discard_write_to_log_file(api_client, "Adding the new host to the group failed. Error: "
                                                           "{}. Aborting all changes.".format(res.error_message))
                     return False
 
-    # handle access rules
+    # handle access-rules
     if where_used_data["access-control-rules"]:
         for obj in where_used_data["access-control-rules"]:
-
-            # in case we connect to a local admin and the layer is a global layer continue
+            # in case we connect to a local admin and the layer is a global layer, skip
             if not is_global_domain and obj["rule"]["domain"]["domain-type"] == "global domain":
                 continue
             if set_access_rule(api_client, obj, new_host_uid) is False:
@@ -137,14 +131,13 @@ def copy_reference(api_client, new_host_uid, new_host_name, where_used_data, is_
     # handle nat-rules
     if where_used_data["nat-rules"]:
         for obj in where_used_data["nat-rules"]:
-
             if set_nat_rule(api_client, obj, new_host_uid) is False:
                 return False
 
-    # handle threat rules
+    # handle threat-rules
     if where_used_data["threat-prevention-rules"]:
         for obj in where_used_data["threat-prevention-rules"]:
-
+            # in case we connect to a local admin and the layer is a global layer, skip
             if not is_global_domain and obj["rule"]["domain"]["domain-type"] == "global domain":
                 continue
             if set_threat_rule(api_client, obj, new_host_uid) is False:
@@ -168,8 +161,8 @@ def set_threat_rule(api_client, obj, new_host_uid):
     :param new_host_uid: new host uid
     :return: True on success, otherwise False
     """
-
     command = "set-threat-rule"
+
     payload = {"uid": obj["rule"]["uid"], "layer": obj["layer"]["uid"]}
     if obj["rule"]["type"] == "threat-exception":
         command = "set-threat-exception"
@@ -182,28 +175,25 @@ def set_threat_rule(api_client, obj, new_host_uid):
         log("\t\tRule number {} (layer: {})".format(obj["position"], obj["layer"]["name"]))
 
     need_to_set_rule = False
-    for place in obj["rule-columns"]:
 
-        if place == "source":
+    for column in obj["rule-columns"]:
+        if column == "source":
             payload.update({"source": {"add": new_host_uid}})
             need_to_set_rule = True
-
-        if place == "destination":
+        if column == "destination":
             payload.update({"destination": {"add": new_host_uid}})
             need_to_set_rule = True
-
-        if place == "scope":
+        if column == "scope":
             payload.update({"protected-scope": {"add": new_host_uid}})
             need_to_set_rule = True
 
-        if need_to_set_rule:
-            res = api_client.api_call(command, payload)
-
-            if res.success is False:
-                discard_write_to_log_file(api_client,
-                                          "Adding new host to threat rule failed."
-                                          " Error: {}. Aborting all changes.".format(res.error_message))
-                return False
+    if need_to_set_rule:
+        res = api_client.api_call(command, payload)
+        if res.success is False:
+            discard_write_to_log_file(api_client,
+                                        "Adding new host to threat rule failed."
+                                        " Error: {}. Aborting all changes.".format(res.error_message))
+            return False
 
     return True
 
@@ -212,25 +202,22 @@ def set_nat_rule(api_client, obj, new_host_uid):
     """
     This method creates a new rule identical to the given rule, and puts the new host at the same places as
     the original host
-
     :param api_client: Api client of the domain
     :param obj: nat layer object
     :param new_host_uid: new host uid
     :return: True on success, False in error
     """
-
-    # finds where the rule appears in the rule get rule details
+    # get rule details
     rule_info = api_client.api_call("show-nat-rule", {"uid": obj["rule"]["uid"], "package": obj["package"]["uid"],
                                                       "details-level": "uid"})
-
     if rule_info.success is False:
         discard_write_to_log_file(api_client, "Failed to get rule details")
         return False
 
     log("\t\tCreate new nat rule in policy {} below rule: {}".format(obj["package"]["name"], obj["rule"]["uid"]))
-
     rule_data = rule_info.data
 
+    # add new nat rule as the existing one
     res = api_client.api_call("add-nat-rule", {"package": obj["package"]["name"],
                                                "position": {"below": obj["rule"]["uid"]},
                                                "enabled": rule_data["enabled"],
@@ -242,44 +229,36 @@ def set_nat_rule(api_client, obj, new_host_uid):
                                                "translated-destination": rule_data["translated-destination"],
                                                "translated-service": rule_data["translated-service"],
                                                "translated-source": rule_data["translated-source"]})
-    # add new nat rule as the exist one
-
     if res.success is False:
         discard_write_to_log_file(api_client, "Adding new nat rule failed."
                                               " Error: {}. Aborting all changes.".format(res.error_message))
         return False
 
-    new_rule_uid = res.data["uid"]
-
-    payload = {"package": obj["package"]["uid"], "uid": new_rule_uid}
+    payload = {"package": obj["package"]["uid"], "uid": res.data["uid"]}
     need_to_set_rule = False
 
-    # set the nat rule according the the place the original host is appear
-    for place in obj["rule-columns"]:
-
-        if place == "original-source":
+    # set the nat rule according the place the original host is appear
+    for column in obj["rule-columns"]:
+        if column == "original-source":
             payload.update({"original-source": new_host_uid})
             need_to_set_rule = True
-
-        if place == "original-destination":
+        if column == "original-destination":
             payload.update({"original-destination": new_host_uid})
             need_to_set_rule = True
-
-        if place == "translated-source":
+        if column == "translated-source":
             payload.update({"translated-source": new_host_uid})
             need_to_set_rule = True
-
-        if place == "translated-destination":
+        if column == "translated-destination":
             payload.update({"translated-destination": new_host_uid})
             need_to_set_rule = True
 
-        if need_to_set_rule:
-            res = api_client.api_call("set-nat-rule", payload)
-            if res.success is False:
-                discard_write_to_log_file(api_client,
-                                          "Adding new host to nat rule failed. "
-                                          "Error: {}. Aborting all changes.".format(res.error_message))
-                return False
+    if need_to_set_rule:
+        res = api_client.api_call("set-nat-rule", payload)
+        if res.success is False:
+            discard_write_to_log_file(api_client,
+                                        "Adding new host to nat rule failed. "
+                                        "Error: {}. Aborting all changes.".format(res.error_message))
+            return False
 
     return True
 
@@ -302,19 +281,16 @@ def set_access_rule(api_client, obj, new_host_uid):
     need_to_set_rule = False
 
     # finds if the rule appears in the source or destination
-    for place in obj["rule-columns"]:
-
-        if place == "source":
+    for column in obj["rule-columns"]:
+        if column == "source":
             payload.update({"source": {"add": new_host_uid}})
             need_to_set_rule = True
-
-        if place == "destination":
+        if column == "destination":
             payload.update({"destination": {"add": new_host_uid}})
             need_to_set_rule = True
 
     if need_to_set_rule:
         res = api_client.api_call("set-access-rule", payload)
-
         if res.success is False:
             discard_write_to_log_file(api_client,
                                       "Adding new host to access rule failed."
@@ -326,15 +302,14 @@ def set_access_rule(api_client, obj, new_host_uid):
 
 def print_unsupported_objects(orig_host_name, where_used_data, is_global_domain):
     """
-     This function is for logging purposes only it prints a list of unsupported references that the original host
-      belongs.
-     Go over all the different references that the whereUsed API is pointing to. If the reference is not a group
-     or an rule, report it as an unsupported type.
-
+     This function is for logging purposes only.
+     It prints a list of unsupported references that the original host belongs to.
+     Go over all the different references that the whereu sed API is pointing to.
+     If the reference is not a group, report it as an unsupported type.
     :param orig_host_name: original host name
     :param where_used_data: the data returned from where-used command on the original host
     :param is_global_domain: True if the domain there where-used run was the global domain
-    :return: True if there are unsupported reference: object which are not group and threat prevention rules
+    :return: True if there are unsupported reference
     """
     has_unsupported_reference = False
 
@@ -347,7 +322,7 @@ def print_unsupported_objects(orig_host_name, where_used_data, is_global_domain)
             if obj["type"] != "group" and (
                         is_global_domain or obj["domain"]["domain-type"] != "global domain"):
                 has_unsupported_reference = True
-                log("'{}' is referenced by '{}', Type: '{}'".format(orig_host_name, obj["name"], obj["type"]))
+                log("n\t'{}' is referenced by '{}', Type: '{}'".format(orig_host_name, obj["name"], obj["type"]))
 
     return has_unsupported_reference
 
@@ -357,7 +332,7 @@ def is_global_host_in_local_domain(api_client, domain_name):
     This method checks if the global host is in the local domain.
     :param domain_name: domain name
     :param api_client: Api client of the local domain
-    :return: True if the global host exists on the local domain, False if the host does not exist ,
+    :return: True if the global host exists on the local domain, False if the host does not exist,
      None if the error occurred
     """
     global global_domain_cloned_host_uid
@@ -367,18 +342,15 @@ def is_global_host_in_local_domain(api_client, domain_name):
         log("\n\tThe new global host wasn't created. There is noting to do for this original host")
         return False
 
-    # check if the global domain exit in the local domain (assign was carried out)
+    # check if the global domain exits in the local domain (assign was carried out)
     res = api_client.api_call("show-host", {"uid": global_domain_cloned_host_uid})
-
     if res.success is False:
         # check if the global host doesn't appear on the local domain
         if "code" in res.data and "generic_err_object_not_found" == res.data["code"]:
             log("\n\tThe new host (uid: " + global_domain_cloned_host_uid + ") does not appear in the local domain: "
                 + domain_name + ".")
-            log(
-                "\tIn order to put the cloned host to the same places as the original one, call assign-global-assignment"
+            log("\tIn order to put the cloned host to the same places as the original one, call assign-global-assignment"
                 " domain and then run the script again.\n")
-
             return False
         else:
             # error occurred
@@ -394,7 +366,6 @@ def find_host_by_ip_and_clone(api_client, orig_host_ip, cloned_host_name, cloned
                               domain_name=""):
     """
     This method finds the host uid which has IP address as the given host, and clones this host.
-
     :param api_client: Api client of the domain
     :param cloned_host_ip: cloned host IP
     :param cloned_host_name: cloned host name
@@ -403,16 +374,13 @@ def find_host_by_ip_and_clone(api_client, orig_host_ip, cloned_host_name, cloned
     :param domain_name: domain name
     :return: True on success, otherwise False
     """
-
     hosts = api_client.api_query("show-hosts", details_level="full")
-
     if hosts.success is False:
         discard_write_to_log_file(api_client, "Failed to get show-host data: {}".format(hosts.error_message))
         return False
 
     # go over all the exist hosts and look for host with same ip as orig_host
     for host_object in hosts.data:
-
         # if the ip is not as the original host continue looking
         if host_object["ipv4-address"] != orig_host_ip:
             continue
@@ -420,27 +388,23 @@ def find_host_by_ip_and_clone(api_client, orig_host_ip, cloned_host_name, cloned
         # found host with the same ip as orig_host, get the data of the host
         orig_host_name = host_object["name"]
         orig_host_uid = host_object["uid"]
-        log("Found host name: " + orig_host_name + ", with IP: " + orig_host_ip + " and UID: " + orig_host_uid + ".")
+        log("\n\tFound host name: " + orig_host_name + ", with IP: " + orig_host_ip + " and UID: " + orig_host_uid)
 
         # check if the host belongs to global or local domain
         global_host = False
         if host_object["domain"]["domain-type"] == "global domain":
             global_host = True
 
-        # If login was done to a local domain and the host with the given IP is global, check if the new
+        # if login was done to a local domain and the host with the given IP is global, check if the new
         # host exists (assign global policy had been already done)
         if not is_global_domain and global_host:
-
             log("\n\tThe original host belongs to the global domain")
-
             # Verify that assign-global-policy was done
             is_appear = is_global_host_in_local_domain(api_client, domain_name)
-
             # error occurred
             if is_appear is None:
                 return False
-            # can't find global host in the local domain
-            # assign-global-policy was not done
+            # can't find global host in the local domain, assign-global-policy was not done
             elif is_appear is False:
                 continue
 
@@ -459,7 +423,6 @@ def check_if_the_host_exist_and_send_to_preform_clone(api_client, orig_host_name
     creates a new host and adds it to all the relevant places.
     The new host is created only if it has not been created yet, though this new host is still added to all the
     places where the original host appears.
-
     :param api_client: Api client of the domain
     :param orig_host_name: original host name
     :param orig_host_uid: original host uid
@@ -476,14 +439,13 @@ def check_if_the_host_exist_and_send_to_preform_clone(api_client, orig_host_name
         cloned_host_uid = global_domain_cloned_host_uid
     else:
         host_uid = find_host_uid_if_exist(api_client, cloned_host_name, cloned_host_ip)
-
         # error occurred while executing "show-host"
         if host_uid is False:
             return False
+
         # the host doesn't exist
         if host_uid is True:
-            new_host = create_host(api_client, orig_host_uid, cloned_host_name, cloned_host_ip)
-
+            new_host = create_host(api_client, orig_host_name, orig_host_uid, cloned_host_name, cloned_host_ip)
             # error occurred
             if new_host is None:
                 return False
@@ -500,7 +462,6 @@ def check_if_the_host_exist_and_send_to_preform_clone(api_client, orig_host_name
 
     clone_res = perform_cloning(api_client, orig_host_name, orig_host_uid, cloned_host_name,
                                 is_global_domain, cloned_host_uid)
-
     if clone_res is False and is_global_domain:
         global_domain_cloned_host_uid = None
 
@@ -518,9 +479,7 @@ def perform_cloning(api_client, orig_host_name, orig_host_uid, cloned_host_name,
     :param new_host_uid: new host uid, if exist
     :return: True on success, otherwise False
     """
-
     where_used = where_host_used(api_client, orig_host_name, orig_host_uid)
-
     if where_used is False or where_used is True:
         return where_used
 
@@ -551,7 +510,6 @@ def where_host_used(api_client, orig_host_name, orig_host_uid):
     """
     # call the where-used API for the object we need to clone
     where_used = api_client.api_call("where-used", {"uid": orig_host_uid})
-
     if where_used.success is False:
         discard_write_to_log_file(api_client,
                                   "Failed to get " + orig_host_name + " data: {}".format(where_used.error_message))
@@ -584,7 +542,6 @@ def handle_local_domain(client_domain, domain, username, password, orig_host_ip,
 
     # login to server domain:
     login_res = client_domain.login(username, password, domain=domain["name"])
-
     if login_res.success is False:
         log("Login failed: {}".format(login_res.error_message))
         return
@@ -604,7 +561,6 @@ def handle_global_domain(client, user_name, password, client_domain, global_doma
     This method performs login to a global domain and looks for the host which is needed to be cloned.
     If the host is found in the domain, clone it and assign the changes on the local domains.
     The policy assignment is done only if the auto assign is turned on.
-
     At the end, log out from the domain
     :param client: Api client of the MDS
     :param user_name: user name
@@ -618,7 +574,6 @@ def handle_global_domain(client, user_name, password, client_domain, global_doma
     """
     # login to the global domain
     login_res = client_domain.login(user_name, password, domain=global_domain_name)
-
     if login_res.success is False:
         log("Login to the global domain: " + global_domain_name +
             " failed: {}. The host will not be cloned in the global domain".format(login_res.error_message))
@@ -658,7 +613,6 @@ def assign_global_domain_on_locals_domains(client, global_domain_name):
     """
     # Retrieve global domain data in order to know on which domains to assign
     show_global_domain = client.api_call("show-global-domain", {"name": global_domain_name, "details-level": "full"})
-
     if show_global_domain.success is False:
         log("\n\tFailed to get the global domains data, cannot assign global domain: {}"
             .format(show_global_domain.error_message))
@@ -666,21 +620,15 @@ def assign_global_domain_on_locals_domains(client, global_domain_name):
 
     # check if the global domain assign on other domains and assign the changes if auto_assign turn on
     if show_global_domain.data["global-domain-assignments"]:
-
         for local_domain in show_global_domain.data["global-domain-assignments"]:
-
             # assign global assignment to local domain
             log("\n\tAssign global domain on local domain: " + local_domain["dependent-domain"])
-
             assign = client.api_call("assign-global-assignment", {"global-domains": global_domain_name,
                                                                   "dependent-domains": local_domain[
                                                                       "dependent-domain"]})
-
             if assign.success is False:
                 log("\n\tFailed to assign the global domain on the local")
-
-            continue
-
+                continue
     else:
         log("There are no domains to assign the changes")
 
@@ -736,7 +684,6 @@ def main(argv):
         args = parser.parse_args()
 
         required = "server username password origin_ip new_name new_ip".split()
-
         for r in required:
             if args.__dict__[r] is None:
                 parser.error("parameter '%s' required" % r)
@@ -775,8 +722,7 @@ def main(argv):
         if auto_assign_input != "" and auto_assign_input == "True":
             auto_assign = auto_assign_input
 
-    with mgmt_api.APIClient(mgmt_api.APIClientArgs(server=server)) as client:
-
+    with APIClient(APIClientArgs(server=server)) as client:
         # Creates debug file. The debug file contains all the communication
         # between the python script and Check Point's management server.
         client.debug_file = "api_calls.json"
@@ -784,41 +730,45 @@ def main(argv):
         global log_file
         log_file = open('logfile.txt', 'w+')
 
-        # The API client, would look for the server's certificate SHA1 fingerprint
-        # in a file.
+        # The API client, would look for the server's certificate SHA1 fingerprint in a file.
         # If the fingerprint is not found on the file, it will ask the user if he
         # accepts the server's fingerprint.
         # In case the user does not accept the fingerprint, exit the program.
+        log("\n\tChecking the fingerprint for server {}...".format(server))
         if client.check_fingerprint() is False:
             write_message_close_log_file_and_exit("Could not get the server's fingerprint"
                                                   " - Check connectivity with the server.")
 
         # login to server
+        log("\n\tLogging in to server {}...".format(server))
         login_res = client.login(username, password)
         if login_res.success is False:
             write_message_close_log_file_and_exit("Login failed: {}".format(login_res.error_message))
 
         # show session details in order to check if the server is MDS
-        session_res = client.api_call("show-session", {}, server, login_res.data["sid"])
+        log("\n\tVerifying the type of server {}...".format(server))
+        session_res = client.api_call("show-session", {}, login_res.data["sid"])
         if session_res.success is False:
             write_message_close_log_file_and_exit("Login failed: {}".format(session_res.error_message))
 
         # the server is not MDS, perform clone host only on the this server
         if session_res.data["domain"]["domain-type"] != "mds":
+            log("\n\tLogged into SM server {}".format(server))
             find_host_by_ip_and_clone(client, orig_host_ip, cloned_host_name, cloned_host_ip)
-
-        # the server is mds, run clone host on each of the existing domains
+        # the server is MDS, run clone host on each of the existing domains
         else:
-            client_domain = mgmt_api.APIClient(mgmt_api.APIClientArgs(server=server))
+            log("\n\tLogged into MD server {}".format(server))
+            client_domain = APIClient(APIClientArgs(server=server))
             client_domain.debug_file = "api_domain_calls.json"
+
             try:
                 # handle global domain
+                log("\n\tChecking on Global Domain...")
                 handle_global_domain(client, username, password, client_domain, global_domain, auto_assign,
                                      orig_host_ip, cloned_host_name, cloned_host_ip)
 
                 # get list of domains
                 domains = client.api_query("show-domains")
-
                 if domains.success is False:
                     discard_write_to_log_file(client,
                                               "Failed to get the domains data: {}".format(domains.error_message))
@@ -829,6 +779,7 @@ def main(argv):
 
                 # go over all the existing domains
                 for domain in domains.data:
+                    log("\n\tChecking on Local Domain {}".format(domain["name"]))
                     handle_local_domain(client_domain, domain, server, username, password, orig_host_ip,
                                         cloned_host_name)
             finally:
