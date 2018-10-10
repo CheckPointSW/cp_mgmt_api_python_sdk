@@ -1,1 +1,1 @@
-#cp_mgmt_api_python_sdk
+name = "cp_mgmt_api_python_sdk"
