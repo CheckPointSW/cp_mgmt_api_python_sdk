@@ -1,10 +1,26 @@
-publish:
-  image: python
+stages:
+  - package
+  - publish
+  - test
+
+package:
+  stage: package
+  image: python:3-alpine
   script:
     - python setup.py sdist bdist_wheel
+  artifacts:
+    paths:
+      - dist
+
+publish:
+  stage: publish
+  image: python:3-alpine
+  script:
     - pip install twine
     - twine upload
         --repository-url ${NEXUS_URL}repository/pypi-hosted/
         --username ${NEXUS_USER}
         --password ${NEXUS_PWD}
         dist/*
+  only:
+    - tags
