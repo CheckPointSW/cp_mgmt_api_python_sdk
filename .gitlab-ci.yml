@@ -14,7 +14,7 @@ package:
 
 publish:
   stage: publish
-  image: python:3-alpine
+  image: python:3
   script:
     - pip install twine
     - twine upload
