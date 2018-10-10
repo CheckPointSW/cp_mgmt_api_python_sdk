@@ -1,3 +1,10 @@
-hello:
+publish:
+  image: python
   script:
-    - echo "Hello world"
+    - python setup.py sdist bdist_wheel
+    - pip install twine
+    - twine upload
+        --repository-url ${NEXUS_URL}repository/pypi-hosted/
+        --username ${NEXUS_USER}
+        --password ${NEXUS_PWD}
+        dist/*
