@@ -780,8 +780,8 @@ def main(argv):
                 # go over all the existing domains
                 for domain in domains.data:
                     log("\n\tChecking on Local Domain {}".format(domain["name"]))
-                    handle_local_domain(client_domain, domain, server, username, password, orig_host_ip,
-                                        cloned_host_name)
+                    handle_local_domain(client_domain, domain, username, password, orig_host_ip, cloned_host_name,
+                                        cloned_host_ip)
             finally:
                 client_domain.save_debug_data()
 

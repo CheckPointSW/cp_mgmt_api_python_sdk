@@ -1,5 +1,6 @@
 # cp_mgmt_api_python_sdk
-Check Point API Python Development Kit simplifies the usage of the Check Point R80.10 Management APIs. The kit contains the API library project, and sample projects demonstrating the capabilities of the library.
+Check Point API Python Development Kit simplifies the usage of the Check Point R80.10 Management APIs. The kit contains the API library project, and sample projects demonstrating the 
+capabilities of the library. The kit is python 2 and 3 compatible code.
 
 ## Content
 `lib` - the API library project.
@@ -12,5 +13,7 @@ Check Point API Python Development Kit simplifies the usage of the Check Point R
 
 `find_duplicate_ip` - demonstrates searching for all the hosts that share the same IP address.
 
+###### For examples, see the relevant Python version folder.
+
 ## Development Environment
-The kit is developed using Python language version 2.7.9
+The kit is developed using Python language version 2.7.14 and version 3.7.0
