@@ -1,6 +1,13 @@
 import json
-from httplib import HTTPResponse
-from api_exceptions import APIException
+import sys
+
+# compatible import for python 2 and 3
+if sys.version_info >= (3, 0):
+    from http.client import HTTPResponse
+    from .api_exceptions import APIException
+else:
+    from httplib import HTTPResponse
+    from api_exceptions import APIException
 
 
 class APIResponse:

@@ -10,17 +10,24 @@
 
 from __future__ import print_function
 
+import sys
+
+# compatible import for python 2 and 3
+if sys.version_info >= (3, 0):
+    from .api_exceptions import APIException, APIClientException
+    from .api_response import APIResponse
+    import http.client
+else:
+    from api_exceptions import APIException, APIClientException
+    from api_response import APIResponse
+    import httplib
+
 import hashlib
-import httplib
 import json
 import os.path
 import ssl
 import subprocess
-import sys
 import time
-
-from api_exceptions import APIException, APIClientException
-from api_response import APIResponse
 
 
 class APIClientArgs:
@@ -367,9 +374,15 @@ class APIClient:
         # default
         if container_keys is None:
             container_keys = ["objects"]
+
         # if given a string, make it a list
-        if isinstance(container_keys, (str, unicode)):
-            container_keys = [container_keys]
+        if sys.version_info >= (3, 0):
+            if isinstance(container_keys, (str, str)):
+                container_keys = [container_keys]
+        else:
+            if isinstance(container_keys, (str, unicode)):
+                container_keys = [container_keys]
+
         for key in container_keys:
             all_objects[key] = []
         iterations = 0  # number of times we've made an API call
@@ -559,7 +572,10 @@ class APIClient:
         :param question: The question to display to the user
         :return: 'True' if the user typed 'Y'. 'False' is the user typed 'N'
         """
-        answer = raw_input(question + " [y/n] ")
+        if sys.version_info >= (3, 0):
+            answer = input(question + " [y/n] ")
+        else:
+            answer = raw_input(question + " [y/n] ")
         if answer.lower() == "y" or answer.lower() == "yes":
             return True
         else:
@@ -624,7 +640,10 @@ class APIClient:
                          the key is the server and the value is its fingerprint.
         :return: A SHA1 fingerprint of the server's certificate.
         """
-        assert isinstance(server, (str, unicode))
+        if sys.version_info >= (3, 0):
+            assert isinstance(server, (str, str))
+        else:
+            assert isinstance(server, (str, unicode))
 
         if os.path.isfile(filename):
             try:
@@ -646,21 +665,42 @@ class APIClient:
         return ""
 
 
-class HTTPSConnection(httplib.HTTPSConnection):
-    """
-    A class for making HTTPS connections that overrides the default HTTPS checks (e.g. not accepting
-    self-signed-certificates) and replaces them with a server fingerprint check.
-    """
+# compatible inheritance from HTTPSConnection for python 2 and 3
+if sys.version_info >= (3, 0):
+    class HTTPSConnection(http.client.HTTPSConnection):
+        """
+        A class for making HTTPS connections that overrides the default HTTPS checks (e.g. not accepting
+        self-signed-certificates) and replaces them with a server fingerprint check.
+        """
 
-    def connect(self):
-        httplib.HTTPConnection.connect(self)
-        self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
+        def connect(self):
+            http.client.HTTPConnection.connect(self)
+            self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
 
-    def get_fingerprint_hash(self):
-        try:
+        def get_fingerprint_hash(self):
+            try:
+                http.client.HTTPConnection.connect(self)
+                self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
+            except Exception:
+                return ""
+            fingerprint = hashlib.new("SHA1", self.sock.getpeercert(True)).hexdigest()
+            return fingerprint.upper()
+else:
+    class HTTPSConnection(httplib.HTTPSConnection):
+        """
+        A class for making HTTPS connections that overrides the default HTTPS checks (e.g. not accepting
+        self-signed-certificates) and replaces them with a server fingerprint check.
+        """
+
+        def connect(self):
             httplib.HTTPConnection.connect(self)
             self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
-        except Exception:
-            return ""
-        fingerprint = hashlib.new("SHA1", self.sock.getpeercert(True)).hexdigest()
-        return fingerprint.upper()
+
+        def get_fingerprint_hash(self):
+            try:
+                httplib.HTTPConnection.connect(self)
+                self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
+            except Exception:
+                return ""
+            fingerprint = hashlib.new("SHA1", self.sock.getpeercert(True)).hexdigest()
+            return fingerprint.upper()
