@@ -134,6 +134,11 @@ class APIClient:
             out_file = open(self.debug_file, 'w+')
             out_file.write(json.dumps(self.api_calls, indent=4, sort_keys=True))
 
+    def set_login_response(self, sid, domain, api_version):
+        self.sid = sid
+        self.domain = domain
+        self.api_version = api_version
+
     def login(self, username, password, continue_last_session=False, domain=None, read_only=False,
               payload=None):
         """
@@ -161,9 +166,7 @@ class APIClient:
         login_res = self.api_call("login", credentials)
 
         if login_res.success:
-            self.sid = login_res.data["sid"]
-            self.domain = domain
-            self.api_version = login_res.data["api-server-version"]
+            self.set_login_response(login_res.data["sid"], domain, login_res.data["api-server-version"])
         return login_res
 
     def login_as_root(self, domain=None, payload=None):
