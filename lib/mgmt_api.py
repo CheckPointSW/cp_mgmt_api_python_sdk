@@ -13,14 +13,12 @@ from __future__ import print_function
 import sys
 
 # compatible import for python 2 and 3
+from .api_exceptions import APIException, APIClientException
+from .api_response import APIResponse
 if sys.version_info >= (3, 0):
-    from .api_exceptions import APIException, APIClientException
-    from .api_response import APIResponse
-    import http.client
+    import http.client as http_client
 else:
-    from api_exceptions import APIException, APIClientException
-    from api_response import APIResponse
-    import httplib
+    import httplib as http_client
 
 import hashlib
 import json
@@ -665,42 +663,21 @@ class APIClient:
         return ""
 
 
-# compatible inheritance from HTTPSConnection for python 2 and 3
-if sys.version_info >= (3, 0):
-    class HTTPSConnection(http.client.HTTPSConnection):
-        """
-        A class for making HTTPS connections that overrides the default HTTPS checks (e.g. not accepting
-        self-signed-certificates) and replaces them with a server fingerprint check.
-        """
+class HTTPSConnection(http_client.HTTPSConnection):
+    """
+    A class for making HTTPS connections that overrides the default HTTPS checks (e.g. not accepting
+    self-signed-certificates) and replaces them with a server fingerprint check.
+    """
 
-        def connect(self):
-            http.client.HTTPConnection.connect(self)
+    def connect(self):
+        http_client.HTTPConnection.connect(self)
+        self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
+
+    def get_fingerprint_hash(self):
+        try:
+            http_client.HTTPConnection.connect(self)
             self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
-
-        def get_fingerprint_hash(self):
-            try:
-                http.client.HTTPConnection.connect(self)
-                self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
-            except Exception:
-                return ""
-            fingerprint = hashlib.new("SHA1", self.sock.getpeercert(True)).hexdigest()
-            return fingerprint.upper()
-else:
-    class HTTPSConnection(httplib.HTTPSConnection):
-        """
-        A class for making HTTPS connections that overrides the default HTTPS checks (e.g. not accepting
-        self-signed-certificates) and replaces them with a server fingerprint check.
-        """
-
-        def connect(self):
-            httplib.HTTPConnection.connect(self)
-            self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
-
-        def get_fingerprint_hash(self):
-            try:
-                httplib.HTTPConnection.connect(self)
-                self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
-            except Exception:
-                return ""
-            fingerprint = hashlib.new("SHA1", self.sock.getpeercert(True)).hexdigest()
-            return fingerprint.upper()
+        except Exception:
+            return ""
+        fingerprint = hashlib.new("SHA1", self.sock.getpeercert(True)).hexdigest()
+        return fingerprint.upper()
