@@ -6,6 +6,7 @@ import json
 import os
 import re
 import sys
+import traceback
 
 from . import APIClient, APIClientArgs
 
@@ -20,7 +21,7 @@ def log(msg):
     sys.stderr.write(msg)
     sys.stderr.flush()
 
-log.debug = False
+log.debug = os.environ.get('MGMT_CLI_DEBUG') == 'on'
 
 
 def debug(*args, **kwargs):
@@ -177,6 +178,48 @@ class Args(argparse.Action):
         setattr(namespace, self.dest, val)
 
 
+def pack(name):
+    import pkgutil
+    import zipfile
+    base_file = os.path.basename(os.path.basename(__file__)).partition('.')[0]
+    base_dir = os.path.basename(os.path.dirname(__file__))
+    with open(name, 'wb') as f:
+        f.write(b'#!/usr/bin/env python\n')
+        with zipfile.ZipFile(f, 'a', zipfile.ZIP_DEFLATED) as zf:
+            for f in ('__init__.py', 'api_exceptions.py', 'api_response.py',
+                      'mgmt_api.py', base_file + '.py'):
+                contents = pkgutil.get_data(base_dir, f)
+                zf.writestr(os.path.join(base_dir, f), contents)
+            zf.writestr('__main__.py', (
+                'from %s.%s import run\nrun()\n' % (
+                    base_dir, base_file)).encode('utf-8'))
+    umask = os.umask(0o777)
+    os.umask(umask)
+    os.chmod(name, 0o755 & (0o7777 - umask))
+
+
+def preprocess_argv(argv):
+    # handle the 'pack' "command"
+    # replace '... set host ...' with '... set-host ...'
+    # for add/delete/show/set
+    prog = [argv[0]]
+    argv = argv[1:]
+    command_index = -1
+    for i, _ in enumerate(argv):
+        if argv[i] in {'add', 'delete', 'show', 'set', 'pack'}:
+            command_index = i
+            break
+    if command_index < 0:
+        return prog + argv
+    if command_index + 1 >= len(argv) or argv[command_index + 1][0] == '-':
+        raise ValueError('cannot have a bare: "%s"' % argv[command_index])
+    if argv[command_index] == 'pack':
+        return pack(argv[command_index + 1])
+    return (prog + argv[:command_index] +
+            [argv[command_index] + '-' + argv[command_index + 1]] +
+            argv[command_index + 2:])
+
+
 def main(argv):
     NO_DEFAULT = object()
     parser = argparse.ArgumentParser(prog=argv[0])
@@ -209,6 +252,9 @@ def main(argv):
         parser.add_argument(*pargs, **kwargs)
     parser.add_argument('command', metavar='COMMAND')
     parser.add_argument('arg', metavar='ARG', nargs='*', action=Args)
+    argv = preprocess_argv(argv)
+    if argv is None:
+        return
     args = parser.parse_args(args=argv[1:])
     for lname, _, _, _ in args_def:
         attr = lname[2:].replace('-', '_')
@@ -284,3 +330,19 @@ def main(argv):
     if publish_response and not publish_response.get('success'):
         raise Exception(json.dumps(publish_response, indent=2))
     sys.stdout.write(args.format(response.get('data')))
+
+
+def run():
+    try:
+        main(sys.argv)
+    except SystemExit as e:
+        sys.exit(e.code)
+    except:
+        t, v, tb = sys.exc_info()
+        debug('Traceback (most recent call last):\n%s' % ''.join(
+            traceback.format_tb(tb)))
+        log('%s' % ''.join(traceback.format_exception_only(t, v)))
+        sys.exit(1)
+
+if __name__ == '__main__':
+    run()
