@@ -37,7 +37,7 @@ class APIClientArgs:
     # port is set to None by default, but it gets replaced with 443 if not specified
     def __init__(self, port=None, fingerprint=None, sid=None, server="127.0.0.1", http_debug_level=0,
                  api_calls=None, debug_file="", proxy_host=None, proxy_port=8080,
-                 api_version="1.1", unsafe=False, unsafe_auto_accept=False):
+                 api_version="1.1", unsafe=False, unsafe_auto_accept=False, context="/web_api/"):
         self.port = port
         # management server fingerprint
         self.fingerprint = fingerprint
@@ -61,6 +61,7 @@ class APIClientArgs:
         self.unsafe = unsafe
         # Indicates that the client should automatically accept and save the server's certificate
         self.unsafe_auto_accept = unsafe_auto_accept
+        self.context = context
 
 
 class APIClient:
@@ -101,6 +102,7 @@ class APIClient:
         self.unsafe = api_client_args.unsafe
         # Indicates that the client should automatically accept and save the server's certificate
         self.unsafe_auto_accept = api_client_args.unsafe_auto_accept
+        self.context = api_client_args.context
 
     def __enter__(self):
         return self
@@ -148,8 +150,11 @@ class APIClient:
         :returns: APIResponse object
         :side-effects: updates the class's uid and server variables
         """
-        credentials = {"user": username, "password": password, "continue-last-session": continue_last_session,
-                       "read-only": read_only}
+        credentials = {"user": username, "password": password}
+
+        if self.context != "/gaia_api/":
+            credentials.update({"continue-last-session": continue_last_session,
+                                "read-only": read_only})
 
         if domain:
             credentials.update({"domain": domain})
@@ -270,7 +275,7 @@ class APIClient:
 
         # Set debug level
         conn.set_debuglevel(self.http_debug_level)
-        url = "/web_api/" + (("v" + str(self.api_version) + "/") if self.api_version else "") + command
+        url = self.context + (("v" + str(self.api_version) + "/") if self.api_version else "") + command
 
         response = None
         try:
