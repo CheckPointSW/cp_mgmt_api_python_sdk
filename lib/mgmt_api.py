@@ -102,6 +102,7 @@ class APIClient:
         self.unsafe = api_client_args.unsafe
         # Indicates that the client should automatically accept and save the server's certificate
         self.unsafe_auto_accept = api_client_args.unsafe_auto_accept
+        # The context of using the client - defaults to web_api
         self.context = api_client_args.context
 
     def __enter__(self):
@@ -152,7 +153,7 @@ class APIClient:
         """
         credentials = {"user": username, "password": password}
 
-        if self.context != "/gaia_api/":
+        if self.context == "/web_api/":
             credentials.update({"continue-last-session": continue_last_session,
                                 "read-only": read_only})
 
