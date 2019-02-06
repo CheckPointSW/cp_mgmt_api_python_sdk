@@ -35,9 +35,10 @@ class APIClientArgs:
     """
 
     # port is set to None by default, but it gets replaced with 443 if not specified
+    # context possible values - web_api (default) or gaia_api
     def __init__(self, port=None, fingerprint=None, sid=None, server="127.0.0.1", http_debug_level=0,
                  api_calls=None, debug_file="", proxy_host=None, proxy_port=8080,
-                 api_version="1.1", unsafe=False, unsafe_auto_accept=False, context="/web_api/"):
+                 api_version="1.1", unsafe=False, unsafe_auto_accept=False, context="web_api"):
         self.port = port
         # management server fingerprint
         self.fingerprint = fingerprint
@@ -61,6 +62,7 @@ class APIClientArgs:
         self.unsafe = unsafe
         # Indicates that the client should automatically accept and save the server's certificate
         self.unsafe_auto_accept = unsafe_auto_accept
+        # The context of using the client - defaults to web_api
         self.context = context
 
 
@@ -153,7 +155,7 @@ class APIClient:
         """
         credentials = {"user": username, "password": password}
 
-        if self.context == "/web_api/":
+        if self.context == "web_api":
             credentials.update({"continue-last-session": continue_last_session,
                                 "read-only": read_only})
 
@@ -276,8 +278,7 @@ class APIClient:
 
         # Set debug level
         conn.set_debuglevel(self.http_debug_level)
-        url = self.context + (("v" + str(self.api_version) + "/") if self.api_version else "") + command
-
+        url = "/" + self.context + "/" + (("v" + str(self.api_version) + "/") if self.api_version else "") + command
         response = None
         try:
             # Send the data to the server
