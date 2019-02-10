@@ -10,18 +10,18 @@ else:
 
 
 # compatible iterator for python 2 and 3
-def compatible_iterator(data):
+def iteritems(data):
     if sys.version_info >= (3, 0):
         return data.items()
     else:
         return data.iteritems()
 
 
-def print_error_and_warning_messages(data):
+def extract_error_and_warning_messages(data):
     error_message = []
 
     # get all errors and warnings as key-value pairs
-    for key, val in compatible_iterator(data):
+    for key, val in iteritems(data):
         error_message.append(str(key) + ": ")
         # value can be either string or list with dictionaries
         if isinstance(val, list):
@@ -63,7 +63,7 @@ class APIResponse:
                 self.res_obj = {"status_code": self.status_code, "data": self.data}
                 if not self.success:
                     try:
-                        self.error_message = print_error_and_warning_messages(self.data)
+                        self.error_message = extract_error_and_warning_messages(self.data)
                     except KeyError:
                         raise APIException("Unexpected error format.", json_response)
 
