@@ -56,7 +56,7 @@ def main():
         login_res = client.login(username, password)
 
         if login_res.success is False:
-            print("Login failed: {}".format(login_res.error_message))
+            print("Login failed:\n{}".format(login_res.error_message))
             exit(1)
 
         # add a rule to the top of the "Network" layer
@@ -74,7 +74,7 @@ def main():
             else:
                 print("Failed to publish the changes.")
         else:
-            print("Failed to add the access-rule: '{}', Error: {}".format(rule_name, add_rule_response.error_message))
+            print("Failed to add the access-rule: '{}', Error:\n{}".format(rule_name, add_rule_response.error_message))
 
 
 if __name__ == "__main__":

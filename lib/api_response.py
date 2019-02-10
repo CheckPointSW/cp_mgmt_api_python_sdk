@@ -9,6 +9,30 @@ else:
     from httplib import HTTPResponse
 
 
+# compatible iterator for python 2 and 3
+def iteritems(data):
+    if sys.version_info >= (3, 0):
+        return data.items()
+    else:
+        return data.iteritems()
+
+
+def extract_error_and_warning_messages(data):
+    error_message = []
+
+    # get all errors and warnings as key-value pairs
+    for key, val in iteritems(data):
+        error_message.append(str(key) + ": ")
+        # value can be either string or list with dictionaries
+        if isinstance(val, list):
+            for error_or_warning in val:
+                error_message.append("\n- " + "message: " + error_or_warning["message"] + "\n")
+        else:
+            error_message.append(str(val) + "\n")
+
+    return ''.join(error_message)
+
+
 class APIResponse:
     """
     An object to represent an API Response.
@@ -39,7 +63,7 @@ class APIResponse:
                 self.res_obj = {"status_code": self.status_code, "data": self.data}
                 if not self.success:
                     try:
-                        self.error_message = self.data["message"]
+                        self.error_message = extract_error_and_warning_messages(self.data)
                     except KeyError:
                         raise APIException("Unexpected error format.", json_response)
 
