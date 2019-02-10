@@ -48,7 +48,7 @@ def main():
         login_res = client.login(username, password)
 
         if login_res.success is False:
-            print("Login failed: {}".format(login_res.error_message))
+            print("Login failed:\n{}".format(login_res.error_message))
             exit(1)
 
         show_sessions_res = client.api_query("show-sessions", "full")

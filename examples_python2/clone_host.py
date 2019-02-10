@@ -45,7 +45,7 @@ def create_host(api_client, orig_host_name, orig_host_uid, cloned_host_name, clo
     log("\n\tGathering information for host {}".format(orig_host_name))
     res = api_client.api_call("show-host", {"uid": orig_host_uid})
     if res.success is False:
-        discard_write_to_log_file(api_client, "Failed to open existing host: {}. Aborting.".format(res.error_message))
+        discard_write_to_log_file(api_client, "Failed to open existing host:\n{}\nAborting.".format(res.error_message))
         return None
 
     # copy the color and comments from the original host
@@ -57,7 +57,7 @@ def create_host(api_client, orig_host_name, orig_host_uid, cloned_host_name, clo
     res = api_client.api_call("add-host", {"name": cloned_host_name, "ip-address": cloned_host_ip,
                                            "color": color, "comments": comments})
     if res.success is False:
-        discard_write_to_log_file(api_client, "Failed to create the new host: {}. Aborting.".format(res.error_message))
+        discard_write_to_log_file(api_client, "Failed to create the new host:\n{}.\nAborting.".format(res.error_message))
         return None
 
     return res.data["uid"]
@@ -80,7 +80,7 @@ def find_host_uid_if_exist(api_client, cloned_host_name, cloned_host_ip):
             return True
         else:
             discard_write_to_log_file(api_client,
-                                      "Operation failed: {}. Aborting all changes.".format(res.error_message))
+                                      "Operation failed:\n{}\nAborting all changes.".format(res.error_message))
             return False
 
     if res.data["ipv4-address"] == cloned_host_ip:
@@ -115,8 +115,8 @@ def copy_reference(api_client, new_host_uid, new_host_name, where_used_data, is_
                 log("\t\tGroup: " + obj["name"])
                 res = api_client.api_call("set-group", {"name": obj["name"], "members": {"add": new_host_uid}})
                 if res.success is False:
-                    discard_write_to_log_file(api_client, "Adding the new host to the group failed. Error: "
-                                                          "{}. Aborting all changes.".format(res.error_message))
+                    discard_write_to_log_file(api_client, "Adding the new host to the group failed. Error:\n"
+                                                          "{}\nAborting all changes.".format(res.error_message))
                     return False
 
     # handle access-rules
@@ -147,7 +147,7 @@ def copy_reference(api_client, new_host_uid, new_host_name, where_used_data, is_
     res = api_client.api_call("publish", {})
     if res.success is False:
         discard_write_to_log_file(api_client,
-                                  "Publish failed. Error: {}. Aborting all changes.".format(res.error_message))
+                                  "Publish failed. Error:\n{}\nAborting all changes.".format(res.error_message))
         return False
 
     return True
@@ -192,7 +192,7 @@ def set_threat_rule(api_client, obj, new_host_uid):
         if res.success is False:
             discard_write_to_log_file(api_client,
                                         "Adding new host to threat rule failed."
-                                        " Error: {}. Aborting all changes.".format(res.error_message))
+                                        " Error:\n{}\nAborting all changes.".format(res.error_message))
             return False
 
     return True
@@ -231,7 +231,7 @@ def set_nat_rule(api_client, obj, new_host_uid):
                                                "translated-source": rule_data["translated-source"]})
     if res.success is False:
         discard_write_to_log_file(api_client, "Adding new nat rule failed."
-                                              " Error: {}. Aborting all changes.".format(res.error_message))
+                                              " Error:\n{}\nAborting all changes.".format(res.error_message))
         return False
 
     payload = {"package": obj["package"]["uid"], "uid": res.data["uid"]}
@@ -257,7 +257,7 @@ def set_nat_rule(api_client, obj, new_host_uid):
         if res.success is False:
             discard_write_to_log_file(api_client,
                                         "Adding new host to nat rule failed. "
-                                        "Error: {}. Aborting all changes.".format(res.error_message))
+                                        "Error:\n{}\nAborting all changes.".format(res.error_message))
             return False
 
     return True
@@ -294,7 +294,7 @@ def set_access_rule(api_client, obj, new_host_uid):
         if res.success is False:
             discard_write_to_log_file(api_client,
                                       "Adding new host to access rule failed."
-                                      " Error: {}. Aborting all changes.".format(res.error_message))
+                                      " Error:\n{}\nAborting all changes.".format(res.error_message))
             return False
 
     return True
@@ -376,7 +376,7 @@ def find_host_by_ip_and_clone(api_client, orig_host_ip, cloned_host_name, cloned
     """
     hosts = api_client.api_query("show-hosts", details_level="full")
     if hosts.success is False:
-        discard_write_to_log_file(api_client, "Failed to get show-host data: {}".format(hosts.error_message))
+        discard_write_to_log_file(api_client, "Failed to get show-host data:\n{}".format(hosts.error_message))
         return False
 
     # go over all the exist hosts and look for host with same ip as orig_host
@@ -512,7 +512,7 @@ def where_host_used(api_client, orig_host_name, orig_host_uid):
     where_used = api_client.api_call("where-used", {"uid": orig_host_uid})
     if where_used.success is False:
         discard_write_to_log_file(api_client,
-                                  "Failed to get " + orig_host_name + " data: {}".format(where_used.error_message))
+                                  "Failed to get " + orig_host_name + " data:\n{}".format(where_used.error_message))
         return False
 
     # if the object is not being referenced there is nothing to do.
@@ -543,7 +543,7 @@ def handle_local_domain(client_domain, domain, username, password, orig_host_ip,
     # login to server domain:
     login_res = client_domain.login(username, password, domain=domain["name"])
     if login_res.success is False:
-        log("Login failed: {}".format(login_res.error_message))
+        log("Login failed:\n{}".format(login_res.error_message))
         return
 
     try:
@@ -576,7 +576,7 @@ def handle_global_domain(client, user_name, password, client_domain, global_doma
     login_res = client_domain.login(user_name, password, domain=global_domain_name)
     if login_res.success is False:
         log("Login to the global domain: " + global_domain_name +
-            " failed: {}. The host will not be cloned in the global domain".format(login_res.error_message))
+            " failed:\n{}\nThe host will not be cloned in the global domain".format(login_res.error_message))
         return
 
     connect_message = "Connecting to domain: " + global_domain_name
@@ -614,7 +614,7 @@ def assign_global_domain_on_locals_domains(client, global_domain_name):
     # Retrieve global domain data in order to know on which domains to assign
     show_global_domain = client.api_call("show-global-domain", {"name": global_domain_name, "details-level": "full"})
     if show_global_domain.success is False:
-        log("\n\tFailed to get the global domains data, cannot assign global domain: {}"
+        log("\n\tFailed to get the global domains data, cannot assign global domain:\n{}"
             .format(show_global_domain.error_message))
         return
 
@@ -743,13 +743,13 @@ def main(argv):
         log("\n\tLogging in to server {}...".format(server))
         login_res = client.login(username, password)
         if login_res.success is False:
-            write_message_close_log_file_and_exit("Login failed: {}".format(login_res.error_message))
+            write_message_close_log_file_and_exit("Login failed:\n{}".format(login_res.error_message))
 
         # show session details in order to check if the server is MDS
         log("\n\tVerifying the type of server {}...".format(server))
         session_res = client.api_call("show-session", {}, login_res.data["sid"])
         if session_res.success is False:
-            write_message_close_log_file_and_exit("Login failed: {}".format(session_res.error_message))
+            write_message_close_log_file_and_exit("Login failed:\n{}".format(session_res.error_message))
 
         # the server is not MDS, perform clone host only on the this server
         if session_res.data["domain"]["domain-type"] != "mds":
@@ -771,7 +771,7 @@ def main(argv):
                 domains = client.api_query("show-domains")
                 if domains.success is False:
                     discard_write_to_log_file(client,
-                                              "Failed to get the domains data: {}".format(domains.error_message))
+                                              "Failed to get the domains data:\n{}".format(domains.error_message))
                     # login out the MDS server
                     client.api_call("logout", {})
                     log_file.close()

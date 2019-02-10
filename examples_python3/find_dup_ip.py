@@ -49,14 +49,14 @@ def main():
         login_res = client.login(username, password)
 
         if login_res.success is False:
-            print("Login failed: {}".format(login_res.error_message))
+            print("Login failed:\n{}".format(login_res.error_message))
             exit(1)
 
         # show hosts
         print("Processing. Please wait...")
         show_hosts_res = client.api_query("show-hosts", "standard")
         if show_hosts_res.success is False:
-            print("Failed to get the list of all host objects: {}".format(show_hosts_res.error_message))
+            print("Failed to get the list of all host objects:\n{}".format(show_hosts_res.error_message))
             exit(1)
 
     # obj_dictionary - for a given IP address, get an array of hosts (name, unique-ID) that use this IP address.
