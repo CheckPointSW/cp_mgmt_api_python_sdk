@@ -38,7 +38,7 @@ class APIClientArgs:
     # context possible values - web_api (default) or gaia_api
     def __init__(self, port=None, fingerprint=None, sid=None, server="127.0.0.1", http_debug_level=0,
                  api_calls=None, debug_file="", proxy_host=None, proxy_port=8080,
-                 api_version="1.1", unsafe=False, unsafe_auto_accept=False, context="web_api"):
+                 api_version=None, unsafe=False, unsafe_auto_accept=False, context="web_api"):
         self.port = port
         # management server fingerprint
         self.fingerprint = fingerprint
@@ -169,7 +169,8 @@ class APIClient:
         if login_res.success:
             self.sid = login_res.data["sid"]
             self.domain = domain
-            self.api_version = login_res.data["api-server-version"]
+            if self.api_version is None:
+                self.api_version = login_res.data["api-server-version"]
         return login_res
 
     def login_as_root(self, domain=None, payload=None):
@@ -211,7 +212,8 @@ class APIClient:
             self.sid = login_response["sid"]
             self.server = "127.0.0.1"
             self.domain = domain
-            self.api_version = login_response["api-server-version"]
+            if self.api_version is None:
+                self.api_version = login_response["api-server-version"]
             return APIResponse(login_response, success=True)
         except ValueError as err:
             raise APIClientException(
