@@ -39,7 +39,7 @@ class APIResponse:
     Contains data, status_code, success, and sometimes error_message
     """
     def __repr__(self):
-        return "lib::APIResponse\n" + json.dumps(self.as_dict(), indent=4, sort_keys=True)
+        return '%s(%s)' % (type(self).__name__, json.dumps(self.as_dict(), indent=4, sort_keys=True))
 
     def __init__(self, json_response, success, status_code=None, err_message=""):
         self.status_code = status_code

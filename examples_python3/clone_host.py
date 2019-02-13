@@ -24,8 +24,8 @@ import getpass
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# lib is a library that handles the communication with the Check Point management server.
-from lib.mgmt_api import APIClient, APIClientArgs
+# cpapi is a library that handles the communication with the Check Point management server.
+from cpapi import APIClient, APIClientArgs
 
 global_domain_cloned_host_uid = None
 log_file = ""
