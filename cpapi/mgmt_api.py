@@ -169,6 +169,8 @@ class APIClient:
         if login_res.success:
             self.sid = login_res.data["sid"]
             self.domain = domain
+            if self.api_version is None:
+                self.api_version = login_res.data["api-server-version"]
         return login_res
 
     def login_as_root(self, domain=None, payload=None):
@@ -210,6 +212,8 @@ class APIClient:
             self.sid = login_response["sid"]
             self.server = "127.0.0.1"
             self.domain = domain
+            if self.api_version is None:
+                self.api_version = login_response["api-server-version"]
             return APIResponse(login_response, success=True)
         except ValueError as err:
             raise APIClientException(
