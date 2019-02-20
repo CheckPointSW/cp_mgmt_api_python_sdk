@@ -1,0 +1,755 @@
+[
+    {
+        "request": {
+            "headers": {
+                "Accept": "*/*",
+                "Content-Length": 86,
+                "Content-Type": "application/json",
+                "User-Agent": "python-api-wrapper"
+            },
+            "payload": {
+                "continue-last-session": false,
+                "password": "****",
+                "read-only": false,
+                "user": "aa"
+            },
+            "url": "/web_api/login"
+        },
+        "response": {
+            "data": {
+                "api-server-version": "1.4",
+                "last-login-was-at": {
+                    "iso-8601": "2019-02-20T14:35+0200",
+                    "posix": 1550666156727
+                },
+                "session-timeout": 600,
+                "sid": "HWjV6i5UZnTTV4Zzu-cBkL0qnYh-dOZDOTUG4C7ZblI",
+                "uid": "a1311e39-9107-4d69-84a9-6a5b30352f80",
+                "url": "https://172.23.78.14:443/web_api"
+            },
+            "status_code": 200
+        }
+    },
+    {
+        "request": {
+            "headers": {
+                "Accept": "*/*",
+                "Content-Length": 2,
+                "Content-Type": "application/json",
+                "User-Agent": "python-api-wrapper",
+                "X-chkp-sid": "HWjV6i5UZnTTV4Zzu-cBkL0qnYh-dOZDOTUG4C7ZblI"
+            },
+            "payload": {},
+            "url": "/web_api/v1.4/show-session"
+        },
+        "response": {
+            "data": {
+                "application": "WEB_API",
+                "changes": 0,
+                "color": "black",
+                "comments": "",
+                "connection-mode": "read write",
+                "description": "",
+                "domain": {
+                    "domain-type": "domain",
+                    "name": "SMC User",
+                    "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                },
+                "expired-session": false,
+                "icon": "Objects/worksession",
+                "in-work": true,
+                "ip-address": "127.0.0.1",
+                "last-login-time": {
+                    "iso-8601": "2019-02-20T14:37+0200",
+                    "posix": 1550666227190
+                },
+                "locks": 0,
+                "meta-info": {
+                    "creation-time": {
+                        "iso-8601": "2019-02-20T14:37+0200",
+                        "posix": 1550666227138
+                    },
+                    "creator": "aa",
+                    "last-modifier": "aa",
+                    "last-modify-time": {
+                        "iso-8601": "2019-02-20T14:37+0200",
+                        "posix": 1550666227192
+                    },
+                    "lock": "unlocked",
+                    "validation-state": "ok"
+                },
+                "read-only": true,
+                "session-timeout": 600,
+                "state": "open",
+                "tags": [],
+                "type": "session",
+                "uid": "a1311e39-9107-4d69-84a9-6a5b30352f80",
+                "user-name": "aa"
+            },
+            "status_code": 200
+        }
+    },
+    {
+        "request": {
+            "headers": {
+                "Accept": "*/*",
+                "Content-Length": 51,
+                "Content-Type": "application/json",
+                "User-Agent": "python-api-wrapper",
+                "X-chkp-sid": "HWjV6i5UZnTTV4Zzu-cBkL0qnYh-dOZDOTUG4C7ZblI"
+            },
+            "payload": {
+                "details-level": "full",
+                "limit": 50,
+                "offset": 0
+            },
+            "url": "/web_api/v1.4/show-hosts"
+        },
+        "response": {
+            "data": {
+                "from": 1,
+                "objects": [
+                    {
+                        "color": "black",
+                        "comments": "",
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "icon": "Objects/host",
+                        "interfaces": [],
+                        "ipv4-address": "3.3.3.3",
+                        "ipv6-address": "1::3000",
+                        "meta-info": {
+                            "creation-time": {
+                                "iso-8601": "2019-02-20T14:29+0200",
+                                "posix": 1550665758980
+                            },
+                            "creator": "WEB_API",
+                            "last-modifier": "WEB_API",
+                            "last-modify-time": {
+                                "iso-8601": "2019-02-20T14:29+0200",
+                                "posix": 1550665758980
+                            },
+                            "lock": "unlocked",
+                            "validation-state": "ok"
+                        },
+                        "name": "amiadDual",
+                        "nat-settings": {
+                            "auto-rule": false
+                        },
+                        "read-only": false,
+                        "tags": [],
+                        "type": "host",
+                        "uid": "92ef3f39-57a1-4d3d-bcf6-8960875fff37"
+                    },
+                    {
+                        "color": "black",
+                        "comments": "",
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "icon": "Objects/host",
+                        "interfaces": [],
+                        "ipv6-address": "1::2000",
+                        "meta-info": {
+                            "creation-time": {
+                                "iso-8601": "2019-02-20T10:48+0200",
+                                "posix": 1550652490062
+                            },
+                            "creator": "WEB_API",
+                            "last-modifier": "WEB_API",
+                            "last-modify-time": {
+                                "iso-8601": "2019-02-20T10:48+0200",
+                                "posix": 1550652490062
+                            },
+                            "lock": "unlocked",
+                            "validation-state": "ok"
+                        },
+                        "name": "amiadHost",
+                        "nat-settings": {
+                            "auto-rule": false
+                        },
+                        "read-only": false,
+                        "tags": [],
+                        "type": "host",
+                        "uid": "2314bcdb-239e-454c-8ea1-b697b1ae0010"
+                    },
+                    {
+                        "color": "black",
+                        "comments": "",
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "icon": "Objects/host",
+                        "interfaces": [],
+                        "ipv4-address": "2.3.3.4",
+                        "meta-info": {
+                            "creation-time": {
+                                "iso-8601": "2019-02-20T11:16+0200",
+                                "posix": 1550654211725
+                            },
+                            "creator": "aa",
+                            "last-modifier": "aa",
+                            "last-modify-time": {
+                                "iso-8601": "2019-02-20T11:16+0200",
+                                "posix": 1550654211725
+                            },
+                            "lock": "unlocked",
+                            "validation-state": "ok"
+                        },
+                        "name": "amiadHost21223",
+                        "nat-settings": {
+                            "auto-rule": false
+                        },
+                        "read-only": false,
+                        "tags": [],
+                        "type": "host",
+                        "uid": "d41e0a7b-b090-4061-92de-2a716aaecfbd"
+                    },
+                    {
+                        "color": "black",
+                        "comments": "",
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "icon": "Objects/host",
+                        "interfaces": [],
+                        "ipv4-address": "2.3.4.5",
+                        "meta-info": {
+                            "creation-time": {
+                                "iso-8601": "2019-02-20T11:04+0200",
+                                "posix": 1550653447328
+                            },
+                            "creator": "WEB_API",
+                            "last-modifier": "WEB_API",
+                            "last-modify-time": {
+                                "iso-8601": "2019-02-20T11:04+0200",
+                                "posix": 1550653447328
+                            },
+                            "lock": "unlocked",
+                            "validation-state": "ok"
+                        },
+                        "name": "amiadHost23",
+                        "nat-settings": {
+                            "auto-rule": false
+                        },
+                        "read-only": false,
+                        "tags": [],
+                        "type": "host",
+                        "uid": "2c08eae0-5d9f-4a20-8a45-cfd6b8ab6fb5"
+                    },
+                    {
+                        "color": "black",
+                        "comments": "",
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "icon": "Objects/host",
+                        "interfaces": [],
+                        "ipv6-address": "1::2020",
+                        "meta-info": {
+                            "creation-time": {
+                                "iso-8601": "2019-02-20T14:10+0200",
+                                "posix": 1550664612583
+                            },
+                            "creator": "aa",
+                            "last-modifier": "aa",
+                            "last-modify-time": {
+                                "iso-8601": "2019-02-20T14:10+0200",
+                                "posix": 1550664612583
+                            },
+                            "lock": "unlocked",
+                            "validation-state": "ok"
+                        },
+                        "name": "hostyael",
+                        "nat-settings": {
+                            "auto-rule": false
+                        },
+                        "read-only": false,
+                        "tags": [],
+                        "type": "host",
+                        "uid": "5c33d0c6-9523-4a4c-9a6b-4d84ad3dd58b"
+                    },
+                    {
+                        "color": "black",
+                        "comments": "",
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "icon": "Objects/host",
+                        "interfaces": [],
+                        "ipv4-address": "6.6.6.6",
+                        "meta-info": {
+                            "creation-time": {
+                                "iso-8601": "2019-02-20T14:10+0200",
+                                "posix": 1550664642828
+                            },
+                            "creator": "aa",
+                            "last-modifier": "aa",
+                            "last-modify-time": {
+                                "iso-8601": "2019-02-20T14:10+0200",
+                                "posix": 1550664642828
+                            },
+                            "lock": "unlocked",
+                            "validation-state": "ok"
+                        },
+                        "name": "hostyael2",
+                        "nat-settings": {
+                            "auto-rule": false
+                        },
+                        "read-only": false,
+                        "tags": [],
+                        "type": "host",
+                        "uid": "e44e5f8b-f483-4084-bfd7-e0c96b7235da"
+                    },
+                    {
+                        "color": "black",
+                        "comments": "",
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "icon": "Objects/host",
+                        "interfaces": [],
+                        "ipv4-address": "61.61.61.61",
+                        "meta-info": {
+                            "creation-time": {
+                                "iso-8601": "2019-02-20T14:33+0200",
+                                "posix": 1550666029480
+                            },
+                            "creator": "aa",
+                            "last-modifier": "aa",
+                            "last-modify-time": {
+                                "iso-8601": "2019-02-20T14:33+0200",
+                                "posix": 1550666029480
+                            },
+                            "lock": "unlocked",
+                            "validation-state": "ok"
+                        },
+                        "name": "newtest1",
+                        "nat-settings": {
+                            "auto-rule": false
+                        },
+                        "read-only": false,
+                        "tags": [],
+                        "type": "host",
+                        "uid": "043f8d5f-5b50-4aaa-84e6-26bd61bd95ea"
+                    },
+                    {
+                        "color": "black",
+                        "comments": "",
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "icon": "Objects/host",
+                        "interfaces": [],
+                        "ipv6-address": "1::22",
+                        "meta-info": {
+                            "creation-time": {
+                                "iso-8601": "2019-02-20T14:34+0200",
+                                "posix": 1550666058266
+                            },
+                            "creator": "aa",
+                            "last-modifier": "aa",
+                            "last-modify-time": {
+                                "iso-8601": "2019-02-20T14:34+0200",
+                                "posix": 1550666058266
+                            },
+                            "lock": "unlocked",
+                            "validation-state": "ok"
+                        },
+                        "name": "newtest2",
+                        "nat-settings": {
+                            "auto-rule": false
+                        },
+                        "read-only": false,
+                        "tags": [],
+                        "type": "host",
+                        "uid": "7ca3698a-8d4f-45ca-a96a-8b1dcaf0c9c9"
+                    },
+                    {
+                        "color": "black",
+                        "comments": "",
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "icon": "Objects/host",
+                        "interfaces": [],
+                        "ipv4-address": "10.10.10.10",
+                        "meta-info": {
+                            "creation-time": {
+                                "iso-8601": "2019-02-20T14:31+0200",
+                                "posix": 1550665871746
+                            },
+                            "creator": "WEB_API",
+                            "last-modifier": "WEB_API",
+                            "last-modify-time": {
+                                "iso-8601": "2019-02-20T14:31+0200",
+                                "posix": 1550665871746
+                            },
+                            "lock": "unlocked",
+                            "validation-state": "ok"
+                        },
+                        "name": "test1",
+                        "nat-settings": {
+                            "auto-rule": false
+                        },
+                        "read-only": false,
+                        "tags": [],
+                        "type": "host",
+                        "uid": "b2a048e8-e971-4373-bc47-3df13d4598a1"
+                    },
+                    {
+                        "color": "black",
+                        "comments": "",
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "icon": "Objects/host",
+                        "interfaces": [],
+                        "ipv6-address": "1::10",
+                        "meta-info": {
+                            "creation-time": {
+                                "iso-8601": "2019-02-20T14:31+0200",
+                                "posix": 1550665885293
+                            },
+                            "creator": "WEB_API",
+                            "last-modifier": "WEB_API",
+                            "last-modify-time": {
+                                "iso-8601": "2019-02-20T14:31+0200",
+                                "posix": 1550665885293
+                            },
+                            "lock": "unlocked",
+                            "validation-state": "ok"
+                        },
+                        "name": "test2",
+                        "nat-settings": {
+                            "auto-rule": false
+                        },
+                        "read-only": false,
+                        "tags": [],
+                        "type": "host",
+                        "uid": "024210d1-4ea4-429e-8e58-47aa6e41a45e"
+                    }
+                ],
+                "to": 10,
+                "total": 10
+            },
+            "status_code": 200
+        }
+    },
+    {
+        "request": {
+            "headers": {
+                "Accept": "*/*",
+                "Content-Length": 23,
+                "Content-Type": "application/json",
+                "User-Agent": "python-api-wrapper",
+                "X-chkp-sid": "HWjV6i5UZnTTV4Zzu-cBkL0qnYh-dOZDOTUG4C7ZblI"
+            },
+            "payload": {
+                "name": "amiadHost23"
+            },
+            "url": "/web_api/v1.4/show-host"
+        },
+        "response": {
+            "data": {
+                "color": "black",
+                "comments": "",
+                "domain": {
+                    "domain-type": "domain",
+                    "name": "SMC User",
+                    "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                },
+                "groups": [],
+                "icon": "Objects/host",
+                "interfaces": [],
+                "ipv4-address": "2.3.4.5",
+                "meta-info": {
+                    "creation-time": {
+                        "iso-8601": "2019-02-20T11:04+0200",
+                        "posix": 1550653447328
+                    },
+                    "creator": "WEB_API",
+                    "last-modifier": "WEB_API",
+                    "last-modify-time": {
+                        "iso-8601": "2019-02-20T11:04+0200",
+                        "posix": 1550653447328
+                    },
+                    "lock": "unlocked",
+                    "validation-state": "ok"
+                },
+                "name": "amiadHost23",
+                "nat-settings": {
+                    "auto-rule": false
+                },
+                "read-only": false,
+                "tags": [],
+                "type": "host",
+                "uid": "2c08eae0-5d9f-4a20-8a45-cfd6b8ab6fb5"
+            },
+            "status_code": 200
+        }
+    },
+    {
+        "request": {
+            "headers": {
+                "Accept": "*/*",
+                "Content-Length": 47,
+                "Content-Type": "application/json",
+                "User-Agent": "python-api-wrapper",
+                "X-chkp-sid": "HWjV6i5UZnTTV4Zzu-cBkL0qnYh-dOZDOTUG4C7ZblI"
+            },
+            "payload": {
+                "uid": "043f8d5f-5b50-4aaa-84e6-26bd61bd95ea"
+            },
+            "url": "/web_api/v1.4/where-used"
+        },
+        "response": {
+            "data": {
+                "used-directly": {
+                    "access-control-rules": [],
+                    "nat-rules": [],
+                    "objects": [
+                        {
+                            "domain": {
+                                "domain-type": "domain",
+                                "name": "SMC User",
+                                "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                            },
+                            "name": "testGroup2",
+                            "type": "group",
+                            "uid": "a36e0339-a8eb-43e6-a8c2-6b8852d2a84b"
+                        }
+                    ],
+                    "threat-prevention-rules": [],
+                    "total": 1
+                }
+            },
+            "status_code": 200
+        }
+    },
+    {
+        "request": {
+            "headers": {
+                "Accept": "*/*",
+                "Content-Length": 82,
+                "Content-Type": "application/json",
+                "User-Agent": "python-api-wrapper",
+                "X-chkp-sid": "HWjV6i5UZnTTV4Zzu-cBkL0qnYh-dOZDOTUG4C7ZblI"
+            },
+            "payload": {
+                "members": {
+                    "add": "2c08eae0-5d9f-4a20-8a45-cfd6b8ab6fb5"
+                },
+                "name": "testGroup2"
+            },
+            "url": "/web_api/v1.4/set-group"
+        },
+        "response": {
+            "data": {
+                "color": "black",
+                "comments": "",
+                "domain": {
+                    "domain-type": "domain",
+                    "name": "SMC User",
+                    "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                },
+                "groups": [],
+                "icon": "General/group",
+                "members": [
+                    {
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "ipv6-address": "1::10",
+                        "name": "test2",
+                        "type": "host",
+                        "uid": "024210d1-4ea4-429e-8e58-47aa6e41a45e"
+                    },
+                    {
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "ipv4-address": "61.61.61.61",
+                        "name": "newtest1",
+                        "type": "host",
+                        "uid": "043f8d5f-5b50-4aaa-84e6-26bd61bd95ea"
+                    },
+                    {
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "ipv6-address": "1::22",
+                        "name": "newtest2",
+                        "type": "host",
+                        "uid": "7ca3698a-8d4f-45ca-a96a-8b1dcaf0c9c9"
+                    },
+                    {
+                        "domain": {
+                            "domain-type": "domain",
+                            "name": "SMC User",
+                            "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                        },
+                        "ipv4-address": "2.3.4.5",
+                        "name": "amiadHost23",
+                        "type": "host",
+                        "uid": "2c08eae0-5d9f-4a20-8a45-cfd6b8ab6fb5"
+                    }
+                ],
+                "meta-info": {
+                    "creation-time": {
+                        "iso-8601": "2019-02-20T14:33+0200",
+                        "posix": 1550665982278
+                    },
+                    "creator": "WEB_API",
+                    "last-modifier": "aa",
+                    "last-modify-time": {
+                        "iso-8601": "2019-02-20T14:37+0200",
+                        "posix": 1550666228550
+                    },
+                    "lock": "unlocked",
+                    "validation-state": "ok"
+                },
+                "name": "testGroup2",
+                "read-only": true,
+                "tags": [],
+                "type": "group",
+                "uid": "a36e0339-a8eb-43e6-a8c2-6b8852d2a84b"
+            },
+            "status_code": 200
+        }
+    },
+    {
+        "request": {
+            "headers": {
+                "Accept": "*/*",
+                "Content-Length": 2,
+                "Content-Type": "application/json",
+                "User-Agent": "python-api-wrapper",
+                "X-chkp-sid": "HWjV6i5UZnTTV4Zzu-cBkL0qnYh-dOZDOTUG4C7ZblI"
+            },
+            "payload": {},
+            "url": "/web_api/v1.4/publish"
+        },
+        "response": {
+            "data": {
+                "task-id": "01234567-89ab-cdef-96a9-687ba2fc4e50"
+            },
+            "status_code": 200
+        }
+    },
+    {
+        "request": {
+            "headers": {
+                "Accept": "*/*",
+                "Content-Length": 76,
+                "Content-Type": "application/json",
+                "User-Agent": "python-api-wrapper",
+                "X-chkp-sid": "HWjV6i5UZnTTV4Zzu-cBkL0qnYh-dOZDOTUG4C7ZblI"
+            },
+            "payload": {
+                "details-level": "full",
+                "task-id": "01234567-89ab-cdef-96a9-687ba2fc4e50"
+            },
+            "url": "/web_api/v1.4/show-task"
+        },
+        "response": {
+            "data": {
+                "tasks": [
+                    {
+                        "progress-percentage": 10,
+                        "status": "in progress",
+                        "suppressed": false,
+                        "task-id": "01234567-89ab-cdef-96a9-687ba2fc4e50",
+                        "task-name": "Publish operation"
+                    }
+                ]
+            },
+            "status_code": 200
+        }
+    },
+    {
+        "request": {
+            "headers": {
+                "Accept": "*/*",
+                "Content-Length": 76,
+                "Content-Type": "application/json",
+                "User-Agent": "python-api-wrapper",
+                "X-chkp-sid": "HWjV6i5UZnTTV4Zzu-cBkL0qnYh-dOZDOTUG4C7ZblI"
+            },
+            "payload": {
+                "details-level": "full",
+                "task-id": "01234567-89ab-cdef-96a9-687ba2fc4e50"
+            },
+            "url": "/web_api/v1.4/show-task"
+        },
+        "response": {
+            "data": {
+                "tasks": [
+                    {
+                        "progress-percentage": 100,
+                        "status": "succeeded",
+                        "suppressed": false,
+                        "task-details": [
+                            {
+                                "publishResponse": {
+                                    "mode": "async",
+                                    "numberOfPublishedChanges": 0
+                                },
+                                "revision": "a1311e39-9107-4d69-84a9-6a5b30352f80"
+                            }
+                        ],
+                        "task-id": "01234567-89ab-cdef-96a9-687ba2fc4e50",
+                        "task-name": "Publish operation"
+                    }
+                ]
+            },
+            "status_code": 200
+        }
+    },
+    {
+        "request": {
+            "headers": {
+                "Accept": "*/*",
+                "Content-Length": 2,
+                "Content-Type": "application/json",
+                "User-Agent": "python-api-wrapper",
+                "X-chkp-sid": "HWjV6i5UZnTTV4Zzu-cBkL0qnYh-dOZDOTUG4C7ZblI"
+            },
+            "payload": {},
+            "url": "/web_api/v1.4/logout"
+        },
+        "response": {
+            "data": {
+                "message": "OK"
+            },
+            "status_code": 200
+        }
+    }
+]

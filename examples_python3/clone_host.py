@@ -83,7 +83,7 @@ def find_host_uid_if_exist(api_client, cloned_host_name, cloned_host_ip):
                                       "Operation failed:\n{}\nAborting all changes.".format(res.error_message))
             return False
 
-    if res.data["ipv4-address"] == cloned_host_ip:
+    if res.data.get("ipv4-address") == cloned_host_ip or res.data.get("ipv6-address") == cloned_host_ip:
         log("\n\tThe host with the same name and IP already exists,\n\t"
             "going to copy it to the same places as the original host")
         return res.data["uid"]
@@ -382,7 +382,7 @@ def find_host_by_ip_and_clone(api_client, orig_host_ip, cloned_host_name, cloned
     # go over all the exist hosts and look for host with same ip as orig_host
     for host_object in hosts.data:
         # if the ip is not as the original host continue looking
-        if host_object["ipv4-address"] != orig_host_ip:
+        if host_object.get("ipv4-address") != orig_host_ip and host_object.get("ipv6-address") != orig_host_ip:
             continue
 
         # found host with the same ip as orig_host, get the data of the host
