@@ -1,8 +1,0 @@
-b'\n\tChecking the fingerprint for server 172.23.78.14...'
-b'\n\tLogging in to server 172.23.78.14...'
-b'\n\tVerifying the type of server 172.23.78.14...'
-b'\n\tLogged into SM server 172.23.78.14'
-b'\n\tFound host name: newtest1, with IP: 61.61.61.61 and UID: 043f8d5f-5b50-4aaa-84e6-26bd61bd95ea'
-b'\n\tThe host with the same name and IP already exists,\n\tgoing to copy it to the same places as the original host'
-b"\n\tAdding 'amiadHost23' to:"
-b'\t\tGroup: testGroup2'
