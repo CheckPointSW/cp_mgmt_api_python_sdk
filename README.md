@@ -31,7 +31,8 @@ Clone the repository with this command:
 git clone https://github.com/CheckPointSW/cp_mgmt_api_python_sdk
 ```
 or by clicking on the _‘Download ZIP’_ button and using unzip. <br>
-From the root directory run:
+
+Navigate to `.../cp_mgmt_api_python_sdk/` directory and run:
 ```
 pip install .
 ```
