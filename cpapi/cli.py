@@ -8,6 +8,7 @@ import re
 import sys
 import traceback
 
+from cpapi.utils import compatible_loads
 from . import APIClient, APIClientArgs
 
 if sys.version_info < (3,):
@@ -85,7 +86,7 @@ class Pairs(object):
         if len(self) == 1 and self[0][0] is Pairs.NO_KEY:
             val = self[0][1]
             if val in {'null', 'true', 'false'} or val[0] in '"{[':
-                return json.loads(val)
+                return compatible_loads(val)
             elif re.match(r'\d+$', val):
                 return int(val, 10)
             return val
@@ -292,8 +293,8 @@ def main(argv):
             client_args[cla] = val
     debug('client args: %s\n' % client_args)
     args.domain = getattr(args, 'domain', None)
-    args.root = json.loads(getattr(args, 'root', 'false'))
-    args.sync = json.loads(getattr(args, 'sync', 'true'))
+    args.root = compatible_loads(getattr(args, 'root', 'false'))
+    args.sync = compatible_loads(getattr(args, 'sync', 'true'))
     with APIClient(APIClientArgs(**client_args)) as client:
         call_args = {}
         if hasattr(args, 'session_id'):

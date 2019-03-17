@@ -27,6 +27,8 @@ import ssl
 import subprocess
 import time
 
+from cpapi.utils import compatible_loads
+
 
 class APIClientArgs:
     """
@@ -192,8 +194,8 @@ class APIClient:
             port = self.get_port()
         else:
             try:
-                port = json.loads(subprocess.check_output([python_absolute_path,
-                                                           api_get_port_absolute_path, "-f", "json"]))["external_port"]
+                port = compatible_loads(subprocess.check_output([python_absolute_path,
+                                                                api_get_port_absolute_path, "-f", "json"]))["external_port"]
             # if can't, default back to what the user wrote or the default (443)
             except (ValueError, subprocess.CalledProcessError):
                 port = self.get_port()
@@ -207,7 +209,7 @@ class APIClient:
                     new_payload += [key, payload[key]]
             if domain:
                 new_payload += ["domain", domain]
-            login_response = json.loads(subprocess.check_output(
+            login_response = compatible_loads(subprocess.check_output(
                 [mgmt_cli_absolute_path, "login", "-r", "true", "-f", "json", "--port", str(port)] + new_payload))
             self.sid = login_response["sid"]
             self.server = "127.0.0.1"
@@ -305,7 +307,7 @@ class APIClient:
         # When the command is 'login' we'd like to convert the password to "****" so that it
         # would not appear as plaintext in the debug file.
         if command == "login":
-            json_data = json.loads(_data)
+            json_data = compatible_loads(_data)
             json_data["password"] = "****"
             _data = json.dumps(json_data)
 
@@ -313,7 +315,7 @@ class APIClient:
         _api_log = {
             "request": {
                 "url": url,
-                "payload": json.loads(_data),
+                "payload": compatible_loads(_data),
                 "headers": _headers
             },
             "response": res.response()
