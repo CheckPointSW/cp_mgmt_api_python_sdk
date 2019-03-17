@@ -1,6 +1,8 @@
 import json
 import sys
 
+from cpapi.utils import compatible_loads
+
 # compatible import for python 2 and 3
 from .api_exceptions import APIException
 if sys.version_info >= (3, 0):
@@ -55,7 +57,7 @@ class APIResponse:
                 if isinstance(json_response, dict):
                     data_dict = json_response
                 else:
-                    data_dict = json.loads(json_response)
+                    data_dict = compatible_loads(json_response)
             except ValueError:
                 raise APIException("APIResponse received a response which is not a valid JSON.", json_response)
             else:
