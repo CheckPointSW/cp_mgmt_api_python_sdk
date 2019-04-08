@@ -41,12 +41,14 @@ def main():
         if login_res.success is False:
             print("Login failed: {}".format(login_res.error_message))
             exit(1)
+        interface_name = raw_input("Enter interface name: ")
 
         api_res = client.api_call("show-physical-interface", {
-                "name": "Enter the name of the physical interface you would like to view"
+                "name": interface_name
         })
         if api_res.success:
             # in order to access any field within the data that had returned, simple use api_res.data["field name"]
+            # or refer to the documentation page - https://<your-server-ip>/gaia_docs/
             print("Physical interface name is '{}' , ipv4 address is '{}', interface mtu is '{}'"
                   .format(api_res.data["name"], api_res.data["ipv4-address"], api_res.data["mtu"]))
         else:

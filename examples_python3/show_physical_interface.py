@@ -42,8 +42,9 @@ def main():
             print("Login failed: {}".format(login_res.error_message))
             exit(1)
 
+        interface_name = input("Enter interface name: ")
         api_res = client.api_call("show-physical-interface", {
-                "name": "Enter the name of the physical interface you would like to view"
+                "name": interface_name
         })
         if api_res.success:
             # in order to access any field within the data that had returned, simple use api_res.data["field name"]

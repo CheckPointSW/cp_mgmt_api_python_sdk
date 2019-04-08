@@ -1,11 +1,11 @@
 #
-# show_hostname.py
+# modify_hostname.py
 # version 1.0
 #
-# The purpose of this script is to show a server hostname
+# The purpose of this script is to modify server hostname
 #
 # written by: Check Point software technologies inc.
-# July 2018
+# APRIL 2019
 #
 
 # A package for reading passwords without displaying them on the console.
@@ -19,6 +19,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # lib is a library that handles the communication with the Check Point management server.
 from cpapi import APIClient, APIClientArgs
+
+# new hostname value to be defined
+HOSTNAME = "my-new-hostname"
 
 
 def main():
@@ -50,7 +53,7 @@ def main():
             print("Failed to get hostname '{}'".format(api_res.data))
 
         # request to set hostname
-        api_res = client.api_call("set-hostname", {"name": "Enter-new-hostname"})
+        api_res = client.api_call("set-hostname", {"name": HOSTNAME})
         if api_res.success:
             print("Hostname name changed to '{}'".format(api_res.data["name"]))
         else:
