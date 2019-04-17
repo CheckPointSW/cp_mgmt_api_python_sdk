@@ -543,6 +543,10 @@ class APIClient:
         local_fingerprint = self.read_fingerprint_from_file(self.server)
         server_fingerprint = self.get_server_fingerprint()
 
+        #Check if fingerprint is passed and matches
+        if self.fingerprint == server_fingerprint:
+            return True
+
         # If the fingerprint is not stored in the local file
         if local_fingerprint == "" or \
                 local_fingerprint.replace(':', '').upper() != server_fingerprint.replace(':', '').upper():
