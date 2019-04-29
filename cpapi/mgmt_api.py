@@ -376,7 +376,11 @@ class APIClient:
         :param payload: a JSON object (or a string representing a JSON object) with the command arguments
         :yields: an APIResponse object as detailed above
         """
-        limit = 50  # each time get no more than 50 objects
+        try:
+            limit = payload['limit']
+        except (KeyError, TypeError):
+            limit = 50    # unless specified, get no more than 50 objects
+
         finished = False  # will become true after getting all the data
         all_objects = {}  # accumulate all the objects from all the API calls
 
