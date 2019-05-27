@@ -12,12 +12,13 @@
 from __future__ import print_function
 
 import getpass
-
-import sys, os
+import os
+import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# lib is a library that handles the communication with the Check Point management server.
+# lib is a library that handles the communication with the Check Point
+# management server.
 from cpapi import APIClient, APIClientArgs
 
 
@@ -31,7 +32,8 @@ def main():
         print("Attention! Your password will be shown on the screen!")
         password = input("Enter password: ")
 
-    client_args = APIClientArgs(server=api_server, api_version="1", unsafe=True, context="gaia_api")
+    client_args = APIClientArgs(server=api_server, api_version="1",
+                                unsafe=True, context="gaia_api")
 
     with APIClient(client_args) as client:
 
@@ -44,14 +46,19 @@ def main():
 
         interface_name = input("Enter interface name: ")
         api_res = client.api_call("show-physical-interface", {
-                "name": interface_name
+            "name": interface_name
         })
         if api_res.success:
-            # in order to access any field within the data that had returned, simple use api_res.data["field name"]
-            print("Physical interface name is '{}' , ipv4 address is '{}', interface mtu is '{}'"
-                  .format(api_res.data["name"], api_res.data["ipv4-address"], api_res.data["mtu"]))
+            # in order to access any field within the data that had
+            # returned, simple use api_res.data["field name"]
+            print(
+                "Physical interface name is '{}' , ipv4 address is '{}', "
+                "interface mtu is '{}' ".format(api_res.data["name"],
+                                                api_res.data["ipv4-address"],
+                                                api_res.data["mtu"]))
         else:
-            print("Failed to get physical interface data '{}'".format(api_res.data))
+            print("Failed to get physical interface data '{}'".format(
+                api_res.data))
 
 
 if __name__ == "__main__":

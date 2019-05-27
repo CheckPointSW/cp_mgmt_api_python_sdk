@@ -12,12 +12,13 @@
 from __future__ import print_function
 
 import getpass
-
-import sys, os
+import os
+import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# lib is a library that handles the communication with the Check Point management server.
+# lib is a library that handles the communication with the Check Point
+# management server.
 from cpapi import APIClient, APIClientArgs
 
 HOSTNAME = "my-new-hostname"
@@ -33,7 +34,8 @@ def main():
         print("Attention! Your password will be shown on the screen!")
         password = input("Enter password: ")
 
-    client_args = APIClientArgs(server=api_server, api_version="1", unsafe=True, context="gaia_api")
+    client_args = APIClientArgs(server=api_server, api_version="1",
+                                unsafe=True, context="gaia_api")
 
     with APIClient(client_args) as client:
 
