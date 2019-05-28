@@ -376,7 +376,7 @@ class APIClient:
         :param payload: a JSON object (or a string representing a JSON object) with the command arguments
         :yields: an APIResponse object as detailed above
         """
-        limit = 50  # each time get no more than 50 objects
+
         finished = False  # will become true after getting all the data
         all_objects = {}  # accumulate all the objects from all the API calls
 
@@ -395,8 +395,11 @@ class APIClient:
         for key in container_keys:
             all_objects[key] = []
         iterations = 0  # number of times we've made an API call
+        limit = 50 # page size to get for each api call
         if payload is None:
             payload = {}
+        else:
+            limit = int(payload.get("limit", limit))
 
         payload.update({"limit": limit, "offset": iterations * limit, "details-level": details_level})
         api_res = self.api_call(command, payload)
@@ -542,6 +545,10 @@ class APIClient:
         # Read the fingerprint from the local file
         local_fingerprint = self.read_fingerprint_from_file(self.server)
         server_fingerprint = self.get_server_fingerprint()
+
+        #Check if fingerprint is passed and matches
+        if self.fingerprint == server_fingerprint:
+            return True
 
         # If the fingerprint is not stored in the local file
         if local_fingerprint == "" or \
