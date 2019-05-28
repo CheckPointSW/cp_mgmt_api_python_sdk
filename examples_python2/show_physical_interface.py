@@ -51,7 +51,8 @@ def main():
         if api_res.success:
             # in order to access any field within the data that had
             # returned, simple use api_res.data["field name"] or refer to
-            # the documentation page - https://<your-server-ip>/gaia_docs/
+            # the documentation page -
+            # https://sc1.checkpoint.com/documents/latest/GaiaAPIs/
             print(
                 "Physical interface name is '{}' , ipv4 address is '{}', "
                 "interface mtu is '{}' ".format(api_res.data["name"],

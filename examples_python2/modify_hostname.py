@@ -21,9 +21,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # management server.
 from cpapi import APIClient, APIClientArgs
 
-# new hostname value to be defined
-HOSTNAME = "my-new-hostname"
-
 
 def main():
     # getting details from the user
@@ -34,6 +31,8 @@ def main():
     else:
         print("Attention! Your password will be shown on the screen!")
         password = raw_input("Enter password: ")
+
+    hostname = raw_input("hostname value to be defined:")
 
     client_args = APIClientArgs(server=api_server,
                                 api_version="1",
@@ -57,7 +56,7 @@ def main():
             print("Failed to get hostname '{}'".format(api_res.data))
 
         # request to set hostname
-        api_res = client.api_call("set-hostname", {"name": HOSTNAME})
+        api_res = client.api_call("set-hostname", {"name": hostname})
         if api_res.success:
             print("Hostname name changed to '{}'".format(api_res.data["name"]))
         else:
