@@ -300,6 +300,8 @@ class APIClient:
                 res = APIResponse("", False, err_message=err)
         except Exception as err:
             res = APIResponse("", False, err_message=err)
+        finally:
+            conn.close()
 
         if response:
             res.status_code = response.status
@@ -446,7 +448,9 @@ class APIClient:
         else:
             conn = HTTPSConnection(self.server, self.get_port(), context=context)
 
-        return conn.get_fingerprint_hash()
+        fingerprint_hash = conn.get_fingerprint_hash()
+        conn.close()
+        return fingerprint_hash
 
     def __wait_for_task(self, task_id):
         """
