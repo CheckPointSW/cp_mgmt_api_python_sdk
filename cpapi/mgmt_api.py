@@ -398,12 +398,14 @@ class APIClient:
             all_objects[key] = []
         iterations = 0  # number of times we've made an API call
         limit = 50 # page size to get for each api call
+        offset = 0 # skip n objects in the database
         if payload is None:
             payload = {}
         else:
             limit = int(payload.get("limit", limit))
+            offset = int(payload.get("offset", offset))
 
-        payload.update({"limit": limit, "offset": iterations * limit, "details-level": details_level})
+        payload.update({"limit": limit, "offset": iterations * limit + offset, "details-level": details_level})
         api_res = self.api_call(command, payload)
         for container_key in container_keys:
             if not api_res.data or container_key not in api_res.data or not isinstance(api_res.data[container_key], list) \
@@ -430,7 +432,7 @@ class APIClient:
                 break
 
             iterations += 1
-            payload.update({"limit": limit, "offset": iterations * limit, "details-level": details_level})
+            payload.update({"limit": limit, "offset": iterations * limit + offset, "details-level": details_level})
             api_res = self.api_call(command, payload)
 
     def get_server_fingerprint(self):
