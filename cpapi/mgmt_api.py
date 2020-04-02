@@ -139,15 +139,8 @@ class APIClient:
             out_file = open(self.debug_file, 'w+')
             out_file.write(json.dumps(self.api_calls, indent=4, sort_keys=True))
 
-    def _build_payload(self, username=None, password=None, api_key=None):
-        payload = {}
-        if username: payload['user'] = username
-        if password: payload['password'] = password
-        if api_key: payload['api-key'] = api_key
-        return payload
-
-    def login(self, username=None, password=None, continue_last_session=False, domain=None, read_only=False,
-              payload=None, api_key=None):
+    def login(self, username, password, continue_last_session=False, domain=None, read_only=False,
+              payload=None):
         """
         performs a 'login' API call to the management server
 
@@ -163,7 +156,7 @@ class APIClient:
         :returns: APIResponse object
         :side-effects: updates the class's uid and server variables
         """
-        credentials = self._build_payload(username, password, api_key)
+        credentials = {"user": username, "password": password}
 
         if self.context == "web_api":
             credentials.update({"continue-last-session": continue_last_session,
@@ -318,10 +311,7 @@ class APIClient:
         # would not appear as plaintext in the debug file.
         if command == "login":
             json_data = compatible_loads(_data)
-            if "password" in json_data:
-                json_data["password"] = "****"
-            if "api-key" in json_data:
-                json_data["api-key"] = "****"
+            json_data["password"] = "****"
             _data = json.dumps(json_data)
 
         # Store the request and the reply (for debug purpose).
