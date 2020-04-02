@@ -151,14 +151,15 @@ class APIClient:
         """
         performs a 'login' API call to the management server
 
-        :param username: Check Point admin name
-        :param password: Check Point admin password
+        :param username: Check Point admin name (Check Point credentials are [username & password] or api_key)
+        :param password: Check Point admin password (Check Point credentials are [username & password] or api_key)
         :param continue_last_session: [optional] It is possible to continue the last Check Point session
                                       or to create a new one
         :param domain: [optional] The name, UID or IP-Address of the domain to login.
         :param read_only: [optional] Login with Read Only permissions. This parameter is not considered in case
                           continue-last-session is true.
         :param payload: [optional] More settings for the login command
+        :param api_key: Check Point api_key (Check Point credentials are [username & password] or api_key)
         :returns: APIResponse object
         :side-effects: updates the class's uid and server variables
         """
