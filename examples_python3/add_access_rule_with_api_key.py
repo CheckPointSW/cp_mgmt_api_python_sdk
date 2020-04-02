@@ -1,3 +1,19 @@
+#
+# add_access_rule_with_api_key.py
+# version 1.0
+#
+#
+# This example demonstrates communication with Check Point Management server using Management API Library in Python.
+# Login with api-key, and add access rule.
+# The demonstrated commands are:
+#
+#   1. login with api-key
+#   2. adding an access rule to the top of Network layer
+#   3. publishing the changes
+#
+# Logout command is called automatically after the work with Management API Library is completed.
+#
+
 from __future__ import print_function
 
 # A package for reading passwords without displaying them on the console.
