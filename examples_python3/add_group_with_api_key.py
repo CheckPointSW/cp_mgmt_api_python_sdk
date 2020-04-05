@@ -1,14 +1,14 @@
 #
-# add_access_rule_with_api_key.py
+# add_group_with_api_key.py
 # version 1.0
 #
 #
 # This example demonstrates communication with Check Point Management server using Management API Library in Python.
-# Login with api-key, and add access rule.
+# Login with api-key, and adding a group.
 # The demonstrated commands are:
 #
 #   1. login with api-key
-#   2. adding an access rule to the top of Network layer
+#   2. adding a group
 #   3. publishing the changes
 #
 # Logout command is called automatically after the work with Management API Library is completed.
@@ -40,7 +40,7 @@ def main():
 
     with APIClient(client_args) as client:
 
-        rule_name = input("Enter the name of the access rule: ")
+        group_name = input("Enter the name of the group: ")
 
         #
         # The API client, would look for the server's certificate SHA1 fingerprint in a file.
@@ -57,13 +57,13 @@ def main():
             print("Login failed:\n{}".format(login_res.error_message))
             exit(1)
 
-        # add a rule to the top of the "Network" layer
-        add_rule_response = client.api_call("add-access-rule",
-                                            {"name": rule_name, "layer": "Network", "position": "top"})
+        # add the group
+        add_group_response = client.api_call("add-group",
+                                            {"name": group_name})
 
-        if add_rule_response.success:
+        if add_group_response.success:
 
-            print("The rule: '{}' has been added successfully".format(rule_name))
+            print("The group: '{}' has been added successfully".format(group_name))
 
             # publish the result
             publish_res = client.api_call("publish", {})
@@ -72,7 +72,7 @@ def main():
             else:
                 print("Failed to publish the changes.")
         else:
-            print("Failed to add the access-rule: '{}', Error:\n{}".format(rule_name, add_rule_response.error_message))
+            print("Failed to add the group: '{}', Error:\n{}".format(group_name, add_group_response.error_message))
 
 
 if __name__ == "__main__":
