@@ -139,6 +139,44 @@ class APIClient:
             out_file = open(self.debug_file, 'w+')
             out_file.write(json.dumps(self.api_calls, indent=4, sort_keys=True))
 
+    def _common_login_logic(self, credentials, continue_last_session, domain, read_only, payload):
+        if self.context == "web_api":
+            credentials.update({"continue-last-session": continue_last_session,
+                                "read-only": read_only})
+
+        if domain:
+            credentials.update({"domain": domain})
+        if isinstance(payload, dict):
+            credentials.update(payload)
+
+        login_res = self.api_call("login", credentials)
+
+        if login_res.success:
+            self.sid = login_res.data["sid"]
+            self.domain = domain
+            if self.api_version is None:
+                self.api_version = login_res.data["api-server-version"]
+        return login_res
+
+    def login_with_api_key(self, api_key, continue_last_session=False, domain=None, read_only=False,
+              payload=None):
+        """
+        performs a 'login' API call to the management server
+
+        :param api_key: Check Point api-key
+        :param continue_last_session: [optional] It is possible to continue the last Check Point session
+                                      or to create a new one
+        :param domain: [optional] The name, UID or IP-Address of the domain to login.
+        :param read_only: [optional] Login with Read Only permissions. This parameter is not considered in case
+                          continue-last-session is true.
+        :param payload: [optional] More settings for the login command
+        :returns: APIResponse object
+        :side-effects: updates the class's uid and server variables
+        """
+        credentials = {"api-key": api_key}
+
+        return self._common_login_logic(credentials, continue_last_session, domain, read_only, payload)
+
     def login(self, username, password, continue_last_session=False, domain=None, read_only=False,
               payload=None):
         """
@@ -157,23 +195,7 @@ class APIClient:
         """
         credentials = {"user": username, "password": password}
 
-        if self.context == "web_api":
-            credentials.update({"continue-last-session": continue_last_session,
-                                "read-only": read_only})
-
-        if domain:
-            credentials.update({"domain": domain})
-        if isinstance(payload, dict):
-            credentials.update(payload)
-
-        login_res = self.api_call("login", credentials)
-
-        if login_res.success:
-            self.sid = login_res.data["sid"]
-            self.domain = domain
-            if self.api_version is None:
-                self.api_version = login_res.data["api-server-version"]
-        return login_res
+        return self._common_login_logic(credentials, continue_last_session, domain, read_only, payload)
 
     def login_as_root(self, domain=None, payload=None):
         """
