@@ -700,7 +700,7 @@ class APIClient:
                 else:
                     print(e.message, file=sys.stderr)
             except IOError as e:
-                print("Couldn't open file: " + filename + "\n" + e.message, file=sys.stderr)
+                print("Couldn't open file: " + filename + "\n" + e.strerror, file=sys.stderr)
             except Exception as e:
                 print(e, file=sys.stderr)
             else:
