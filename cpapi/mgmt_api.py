@@ -246,7 +246,7 @@ class APIClient:
         except (WindowsError, subprocess.CalledProcessError) as err:
             raise APIClientException("Could not login as root:\n" + str(type(err)) + " - " + str(err))
 
-    def api_call(self, command, payload=None, sid=None, wait_for_task=True):
+    def api_call(self, command, payload=None, sid=None, wait_for_task=True, timeout=-1):
         """
         performs a web-service API request to the management server
 
@@ -258,9 +258,12 @@ class APIClient:
                               and will not return until the task is completed.
                               when wait_for_task=False, it is up to the user to call the "show-task" API and check
                               the status of the command.
+        :param timeout: Optional positive timeout (in seconds) before stop waiting for the task even if not completed.
         :return: APIResponse object
         :side-effects: updates the class's uid and server variables
         """
+        timeout_start = time.time()
+
         self.check_fingerprint()
         if payload is None:
             payload = {}
@@ -349,9 +352,9 @@ class APIClient:
         # If we want to wait for the task to end, wait for it
         if wait_for_task is True and res.success and command != "show-task":
             if "task-id" in res.data:
-                res = self.__wait_for_task(res.data["task-id"])
+                res = self.__wait_for_task(res.data["task-id"], timeout=(timeout - time.time() + timeout_start))
             elif "tasks" in res.data:
-                res = self.__wait_for_tasks(res.data["tasks"])
+                res = self.__wait_for_tasks(res.data["tasks"], timeout=(timeout - time.time() + timeout_start))
 
         return res
 
@@ -494,7 +497,7 @@ class APIClient:
         task_start = time.time()
         in_progress = "in progress"
 
-        # As long as there is a task in progress or the timeout isn't expired
+        # As long as there is a task in progress or the timeout isn't expired (and is positive)
         while not task_complete and (timeout < 0 or time.time() - task_start < timeout):
             # Check the status of the task
             task_result = self.api_call("show-task", {"task-id": task_id, "details-level": "full"}, self.sid, False)
@@ -526,13 +529,14 @@ class APIClient:
         self.check_tasks_status(task_result)
         return task_result
 
-    def __wait_for_tasks(self, task_objects):
+    def __wait_for_tasks(self, task_objects, timeout=-1):
         """
         The version of __wait_for_task function for the collection of tasks
 
         :param task_objects: A list of task objects
         :return: APIResponse object (response of show-task command).
         """
+        timeout_start = time.time()
 
         # A list of task ids to be retrieved
         tasks = []
@@ -540,7 +544,7 @@ class APIClient:
             # Retrieve the taskId and wait for the task to be completed
             task_id = task_obj["task-id"]
             tasks.append(task_id)
-            self.__wait_for_task(task_id)
+            self.__wait_for_task(task_id, timeout=(timeout - time.time() + timeout_start))
 
         task_result = self.api_call("show-task", {"task-id": tasks, "details-level": "full"},
                                     self.sid, False)
