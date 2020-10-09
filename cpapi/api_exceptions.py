@@ -12,3 +12,7 @@ class APIClientException(APIException):
     def __init__(self, value):
         APIException.__init__(self, value, None)
 
+
+class TimeoutException(APIException):
+    def __init__(self, value):
+        APIException.__init__(self, value, None)
