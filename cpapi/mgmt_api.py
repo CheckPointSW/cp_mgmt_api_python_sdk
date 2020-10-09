@@ -476,7 +476,7 @@ class APIClient:
         conn.close()
         return fingerprint_hash
 
-    def __wait_for_task(self, task_id):
+    def __wait_for_task(self, task_id, timeout=-1):
         """
         When the server needs to perform an API call that may take a long time (e.g. run-script, install-policy,
         publish), the server responds with a 'task-id'.
@@ -485,15 +485,17 @@ class APIClient:
         The function will return when the task (and its sub-tasks) are no longer in-progress.
 
         :param task_id: The task identifier.
+        :param timeout: Optional positive timeout (in seconds) that will end the task even if not completed.
         :return: APIResponse object (response of show-task command).
         :raises APIException
         """
         task_complete = False
         task_result = None
+        task_start = time.time()
         in_progress = "in progress"
 
-        # As long as there is a task in progress
-        while not task_complete:
+        # As long as there is a task in progress or the timeout isn't expired
+        while not task_complete and (timeout < 0 or time.time() - task_start < timeout):
             # Check the status of the task
             task_result = self.api_call("show-task", {"task-id": task_id, "details-level": "full"}, self.sid, False)
 
@@ -554,8 +556,11 @@ class APIClient:
         :param task_result: api_response returned from "show-task" command
         :return:
         """
+        if task_result is None:
+            return
+
         for task in task_result.data["tasks"]:
-            if task["status"] == "failed" or task["status"] == "partially succeeded":
+            if task["status"] == "failed" or task["status"] == "partially succeeded" or task["status"] == "in progress":
                 task_result.set_success_status(False)
                 break
 
