@@ -502,7 +502,7 @@ class APIClient:
 
             # If timeout parameter was set and valid and timeout did expire, raise exception
             if timeout >= 0 and time.time() - task_start > timeout:
-                raise TimeoutException()
+                raise TimeoutException("Timeout reached when waiting for task to complete")
 
             # Check the status of the task
             task_result = self.api_call("show-task", {"task-id": task_id, "details-level": "full"}, self.sid, False)
