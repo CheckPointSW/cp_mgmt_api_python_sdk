@@ -13,7 +13,7 @@ from __future__ import print_function
 import sys
 
 # compatible import for python 2 and 3
-from .api_exceptions import APIException, APIClientException
+from .api_exceptions import APIException, APIClientException, TimeoutException
 from .api_response import APIResponse
 if sys.version_info >= (3, 0):
     import http.client as http_client
@@ -498,7 +498,12 @@ class APIClient:
         in_progress = "in progress"
 
         # As long as there is a task in progress or the timeout isn't expired (and is positive)
-        while not task_complete and (timeout < 0 or time.time() - task_start < timeout):
+        while not task_complete:
+
+            # If timeout parameter was set and valid and timeout did expire, raise exception
+            if timeout >= 0 and time.time() - task_start > timeout:
+                raise TimeoutException()
+
             # Check the status of the task
             task_result = self.api_call("show-task", {"task-id": task_id, "details-level": "full"}, self.sid, False)
 
