@@ -11,3 +11,14 @@ def compatible_loads(json_data):
     if isinstance(json_data, bytes) and (3, 0) <= sys.version_info < (3, 6):
         json_data = json_data.decode("utf-8")
     return json.loads(json_data)
+
+
+def get_massage_from_io_error(error):
+    """
+    :param: IOError
+    :return: error message
+    """
+    if sys.version_info >= (3, 0):
+        return error.strerror
+    else:
+        return error.message

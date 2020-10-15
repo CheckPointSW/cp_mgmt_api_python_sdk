@@ -15,6 +15,8 @@ import sys
 # compatible import for python 2 and 3
 from .api_exceptions import APIException, APIClientException
 from .api_response import APIResponse
+from cpapi.utils import get_massage_from_io_error, compatible_loads
+
 if sys.version_info >= (3, 0):
     import http.client as http_client
 else:
@@ -26,8 +28,6 @@ import os.path
 import ssl
 import subprocess
 import time
-
-from cpapi.utils import compatible_loads
 
 
 class APIClientArgs:
@@ -243,7 +243,9 @@ class APIClient:
             raise APIClientException(
                 "Could not load JSON from login as root command, perhaps no root privileges?\n" + str(
                     type(err)) + " - " + str(err))
-        except (WindowsError, subprocess.CalledProcessError) as err:
+        except subprocess.CalledProcessError as err:
+            raise APIClientException("Could not login as root:\n" + str(type(err)) + " - " + str(err))
+        except (WindowsError) as err:
             raise APIClientException("Could not login as root:\n" + str(type(err)) + " - " + str(err))
 
     def api_call(self, command, payload=None, sid=None, wait_for_task=True):
@@ -650,7 +652,7 @@ class APIClient:
                     print(e.message, file=sys.stderr)
                 return False
             except IOError as e:
-                print("Couldn't open file: " + filename + "\n" + e.message, file=sys.stderr)
+                print("Couldn't open file: " + filename + "\n" + get_massage_from_io_error(e), file=sys.stderr)
                 return False
             except Exception as e:
                 print(e, file=sys.stderr)
@@ -669,7 +671,8 @@ class APIClient:
                 filedump.close()
             return True
         except IOError as e:
-            print("Couldn't open file: " + filename + " for writing.\n" + e.message, file=sys.stderr)
+            print("Couldn't open file: " + filename + " for writing.\n" + get_massage_from_io_error(e),
+                  file=sys.stderr)
         except Exception as e:
             print(e, file=sys.stderr)
             return False
@@ -699,7 +702,8 @@ class APIClient:
                 else:
                     print(e.message, file=sys.stderr)
             except IOError as e:
-                print("Couldn't open file: " + filename + "\n" + e.message, file=sys.stderr)
+                print("Couldn't open file: " + filename + "\n" + get_massage_from_io_error(e),
+                      file=sys.stderr)
             except Exception as e:
                 print(e, file=sys.stderr)
             else:
