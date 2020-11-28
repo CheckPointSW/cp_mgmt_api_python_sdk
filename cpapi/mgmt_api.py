@@ -361,7 +361,7 @@ class APIClient:
         return res
 
     def api_query(self, command, details_level="standard", container_key="objects", include_container_key=False,
-                  payload=None):
+                  payload=None, limit=50):
         """
         The APIs that return a list of objects are limited by the number of objects that they return.
         To get the full list of objects, there's a need to make repeated API calls each time using a different offset
@@ -386,13 +386,13 @@ class APIClient:
                      an APIResponse object whose .data member contains a dict: { container_key: [...], "total": n }
         """
         api_res = None
-        for api_res in self.gen_api_query(command, details_level, [container_key], payload=payload):
+        for api_res in self.gen_api_query(command, details_level, [container_key], payload=payload, limit=limit):
             pass
         if api_res and api_res.success and container_key in api_res.data and include_container_key is False:
             api_res.data = api_res.data[container_key]
         return api_res
 
-    def gen_api_query(self, command, details_level="standard", container_keys=None, payload=None):
+    def gen_api_query(self, command, details_level="standard", container_keys=None, payload=None, limit = 50):
         """
         This is a generator function that yields the list of wanted objects received so far from the management server.
         This is in contrast to normal API calls that return only a limited number of objects.
@@ -424,7 +424,7 @@ class APIClient:
         for key in container_keys:
             all_objects[key] = []
         iterations = 0  # number of times we've made an API call
-        limit = 50 # page size to get for each api call
+        #limit = 50 # page size to get for each api call
         offset = 0 # skip n objects in the database
         if payload is None:
             payload = {}
