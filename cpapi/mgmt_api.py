@@ -38,6 +38,7 @@ class APIClientArgs:
 
     # port is set to None by default, but it gets replaced with 443 if not specified
     # context possible values - web_api (default) or gaia_api
+    # single_conn is set to True by default, when work on parallel set to False
     def __init__(self, port=None, fingerprint=None, sid=None, server="127.0.0.1", http_debug_level=0,
                  api_calls=None, debug_file="", proxy_host=None, proxy_port=8080,
                  api_version=None, unsafe=False, unsafe_auto_accept=False, context="web_api", single_conn=True):
@@ -123,6 +124,7 @@ class APIClient:
         # if sid is not empty (the login api was called), then call logout
         if self.sid:
             self.api_call("logout")
+        self.close_connection()
         # save debug data with api calls to disk
         self.save_debug_data()
 
@@ -459,7 +461,7 @@ class APIClient:
         Initiates an HTTPS connection to the server if need and extracts the SHA1 fingerprint from the server's certificate.
         :return: string with SHA1 fingerprint (all uppercase letters)
         """
-        conn = self.get_https_connection()
+        conn = self.get_https_connection(set_fingerprint=False, set_debug_level=False)
         fingerprint_hash = conn.get_fingerprint_hash()
         if not self.single_conn:
             conn.close()
@@ -707,7 +709,7 @@ class APIClient:
                     return json_dict[server]
         return ""
 
-    def create_https_connection(self):
+    def create_https_connection(self, set_fingerprint, set_debug_level):
         context = ssl.create_default_context()
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
@@ -719,19 +721,21 @@ class APIClient:
             conn = HTTPSConnection(self.server, self.get_port(), context=context)
 
         # Set fingerprint
-        conn.fingerprint = self.fingerprint
+        if set_fingerprint:
+            conn.fingerprint = self.fingerprint
 
         # Set debug level
-        conn.set_debuglevel(self.http_debug_level)
+        if set_debug_level:
+            conn.set_debuglevel(self.http_debug_level)
         conn.connect()
         return conn
 
-    def get_https_connection(self):
+    def get_https_connection(self, set_fingerprint=True, set_debug_level=True):
         if self.single_conn:
             if self.conn is None:
-                self.conn = self.create_https_connection()
+                self.conn = self.create_https_connection(set_fingerprint, set_debug_level)
             return self.conn
-        return self.create_https_connection()
+        return self.create_https_connection(set_fingerprint, set_debug_level)
 
     def close_connection(self):
         if self.conn:
@@ -748,5 +752,7 @@ class HTTPSConnection(http_client.HTTPSConnection):
         self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
 
     def get_fingerprint_hash(self):
+        if self.sock is None:
+            self.connect()
         fingerprint = hashlib.new("SHA1", self.sock.getpeercert(True)).hexdigest()
         return fingerprint.upper()
