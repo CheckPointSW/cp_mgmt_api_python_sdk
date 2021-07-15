@@ -293,7 +293,8 @@ class APIClient:
             "User-Agent": "python-api-wrapper",
             "Accept": "*/*",
             "Content-Type": "application/json",
-            "Content-Length": len(_data)
+            "Content-Length": len(_data),
+            "Connection": "Keep-Alive"
         }
 
         # In all API calls (except for 'login') a header containing the Check Point session-id is required.
@@ -318,6 +319,11 @@ class APIClient:
                 res = APIResponse("", False, err_message=err_message)
             else:
                 res = APIResponse("", False, err_message=err)
+        except (http_client.CannotSendRequest, http_client.BadStatusLine) as e:
+            self.conn = self.create_https_connection()
+            self.conn.request("POST", url, _data, _headers)
+            response = self.conn.getresponse()
+            res = APIResponse.from_http_response(response)
         except Exception as err:
             res = APIResponse("", False, err_message=err)
         finally:
@@ -461,7 +467,7 @@ class APIClient:
         Initiates an HTTPS connection to the server if need and extracts the SHA1 fingerprint from the server's certificate.
         :return: string with SHA1 fingerprint (all uppercase letters)
         """
-        conn = self.get_https_connection(set_fingerprint=False, set_debug_level=False)
+        conn = self.get_https_connection()
         fingerprint_hash = conn.get_fingerprint_hash()
         if not self.single_conn:
             conn.close()
@@ -709,7 +715,7 @@ class APIClient:
                     return json_dict[server]
         return ""
 
-    def create_https_connection(self, set_fingerprint, set_debug_level):
+    def create_https_connection(self):
         context = ssl.create_default_context()
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
@@ -721,21 +727,19 @@ class APIClient:
             conn = HTTPSConnection(self.server, self.get_port(), context=context)
 
         # Set fingerprint
-        if set_fingerprint:
-            conn.fingerprint = self.fingerprint
+        conn.fingerprint = self.fingerprint
 
         # Set debug level
-        if set_debug_level:
-            conn.set_debuglevel(self.http_debug_level)
+        conn.set_debuglevel(self.http_debug_level)
         conn.connect()
         return conn
 
-    def get_https_connection(self, set_fingerprint=True, set_debug_level=True):
+    def get_https_connection(self):
         if self.single_conn:
             if self.conn is None:
-                self.conn = self.create_https_connection(set_fingerprint, set_debug_level)
+                self.conn = self.create_https_connection()
             return self.conn
-        return self.create_https_connection(set_fingerprint, set_debug_level)
+        return self.create_https_connection()
 
     def close_connection(self):
         if self.conn:
