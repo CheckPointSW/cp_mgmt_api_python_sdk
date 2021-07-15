@@ -28,7 +28,7 @@ def extract_error_and_warning_messages(data):
         # value can be either string or list with dictionaries
         if isinstance(val, list):
             for error_or_warning in val:
-                error_message.append("\n- " + "message: " + error_or_warning["message"] + "\n")
+                error_message.append("\n- " + "message: " + error_or_warning.get("message", "") + "\n")
         else:
             error_message.append(str(val) + "\n")
 
@@ -59,7 +59,9 @@ class APIResponse:
                 else:
                     data_dict = compatible_loads(json_response)
             except ValueError:
-                raise APIException("APIResponse received a response which is not a valid JSON.", json_response)
+                self.data = {"errors": [{"message": str(json_response)}]}
+                self.error_message = "APIResponse received a response which is not a valid JSON."
+                self.res_obj = {"status_code": self.status_code, "data": self.data}
             else:
                 self.data = data_dict
                 self.res_obj = {"status_code": self.status_code, "data": self.data}
