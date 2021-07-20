@@ -41,7 +41,7 @@ class APIClientArgs:
     # single_conn is set to True by default, when work on parallel set to False
     def __init__(self, port=None, fingerprint=None, sid=None, server="127.0.0.1", http_debug_level=0,
                  api_calls=None, debug_file="", proxy_host=None, proxy_port=8080,
-                 api_version=None, unsafe=False, unsafe_auto_accept=False, context="web_api", single_conn=True):
+                 api_version=None, unsafe=False, unsafe_auto_accept=False, context="web_api", single_conn=True, user_agent="python-api-wrapper"):
         self.port = port
         # management server fingerprint
         self.fingerprint = fingerprint
@@ -69,6 +69,8 @@ class APIClientArgs:
         self.context = context
         # Indicates that the client should use single HTTPS connection
         self.single_conn = single_conn
+        # User agent will be use in api call request header
+        self.user_agent = user_agent
 
 
 class APIClient:
@@ -115,6 +117,9 @@ class APIClient:
         self.conn = None
         # Indicates that the client should use single HTTPS connection
         self.single_conn = api_client_args.single_conn
+        # User agent will be use in api call request header
+        self.user_agent = api_client_args.user_agent
+
 
     def __enter__(self):
         return self
@@ -290,7 +295,7 @@ class APIClient:
 
         # Set headers
         _headers = {
-            "User-Agent": "python-api-wrapper",
+            "User-Agent": self.user_agent,
             "Accept": "*/*",
             "Content-Type": "application/json",
             "Content-Length": len(_data),
