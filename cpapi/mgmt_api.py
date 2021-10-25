@@ -220,7 +220,7 @@ class APIClient:
         :param payload: [optional] dict of additional parameters for the login command
         :return: APIResponse object with the relevant details from the login command.
         """
-        python_absolute_path = os.path.expandvars("$MDS_FWDIR/Python/bin/python")
+        python_absolute_path = os.path.expandvars("$MDS_FWDIR/Python/bin/python3")
         api_get_port_absolute_path = os.path.expandvars("$MDS_FWDIR/scripts/api_get_port.py")
         mgmt_cli_absolute_path = os.path.expandvars("$CPDIR/bin/mgmt_cli")
 
