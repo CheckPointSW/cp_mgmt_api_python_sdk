@@ -42,7 +42,7 @@ class APIClientArgs:
     def __init__(self, port=None, fingerprint=None, sid=None, server="127.0.0.1", http_debug_level=0,
                  api_calls=None, debug_file="", proxy_host=None, proxy_port=8080,
                  api_version=None, unsafe=False, unsafe_auto_accept=False, context="web_api", single_conn=True,
-                 user_agent="python-api-wrapper", save_logs=True):
+                 user_agent="python-api-wrapper"):
         self.port = port
         # management server fingerprint
         self.fingerprint = fingerprint
@@ -72,8 +72,6 @@ class APIClientArgs:
         self.single_conn = single_conn
         # User agent will be use in api call request header
         self.user_agent = user_agent
-        # Flag whether or not save logs of api calls
-        self.save_logs = save_logs
 
 
 class APIClient:
@@ -122,8 +120,6 @@ class APIClient:
         self.single_conn = api_client_args.single_conn
         # User agent will be use in api call request header
         self.user_agent = api_client_args.user_agent
-        # Flag whether or not save logs of api calls
-        self.save_logs = api_client_args.save_logs
 
     def __enter__(self):
         return self
@@ -134,9 +130,8 @@ class APIClient:
         if self.sid:
             self.api_call("logout")
         self.close_connection()
-        if self.save_logs:
-            # save debug data with api calls to disk
-            self.save_debug_data()
+        # save debug data with api calls to disk
+        self.save_debug_data()
 
     def get_port(self):
         """returns the port of the API client (int)"""
@@ -350,7 +345,7 @@ class APIClient:
             json_data["password"] = "****"
             _data = json.dumps(json_data)
 
-        if self.save_logs:
+        if self.debug_file:
             # Store the request and the reply (for debug purpose).
             _api_log = {
                 "request": {
