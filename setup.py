@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="cpapi",
-    version="1.2.1",
+    version="1.3.0",
     author="API team",
     author_email="api_team@checkpoint.com",
     description="Check Point Management API SDK",
