@@ -41,7 +41,8 @@ class APIClientArgs:
     # single_conn is set to True by default, when work on parallel set to False
     def __init__(self, port=None, fingerprint=None, sid=None, server="127.0.0.1", http_debug_level=0,
                  api_calls=None, debug_file="", proxy_host=None, proxy_port=8080,
-                 api_version=None, unsafe=False, unsafe_auto_accept=False, context="web_api", single_conn=True, user_agent="python-api-wrapper"):
+                 api_version=None, unsafe=False, unsafe_auto_accept=False, context="web_api", single_conn=True,
+                 user_agent="python-api-wrapper"):
         self.port = port
         # management server fingerprint
         self.fingerprint = fingerprint
@@ -119,7 +120,6 @@ class APIClient:
         self.single_conn = api_client_args.single_conn
         # User agent will be use in api call request header
         self.user_agent = api_client_args.user_agent
-
 
     def __enter__(self):
         return self
@@ -324,7 +324,7 @@ class APIClient:
                 res = APIResponse("", False, err_message=err_message)
             else:
                 res = APIResponse("", False, err_message=err)
-        except (http_client.CannotSendRequest, http_client.BadStatusLine) as e:
+        except (http_client.CannotSendRequest, http_client.BadStatusLine, ConnectionAbortedError) as e:
             self.conn = self.create_https_connection()
             self.conn.request("POST", url, _data, _headers)
             response = self.conn.getresponse()
@@ -345,16 +345,17 @@ class APIClient:
             json_data["password"] = "****"
             _data = json.dumps(json_data)
 
-        # Store the request and the reply (for debug purpose).
-        _api_log = {
-            "request": {
-                "url": url,
-                "payload": compatible_loads(_data),
-                "headers": _headers
-            },
-            "response": res.response()
-        }
-        self.api_calls.append(_api_log)
+        if self.debug_file:
+            # Store the request and the reply (for debug purpose).
+            _api_log = {
+                "request": {
+                    "url": url,
+                    "payload": compatible_loads(_data),
+                    "headers": _headers
+                },
+                "response": res.response()
+            }
+            self.api_calls.append(_api_log)
 
         # If we want to wait for the task to end, wait for it
         if wait_for_task is True and res.success and command != "show-task":
