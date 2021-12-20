@@ -723,8 +723,7 @@ class APIClient:
 
     def create_https_connection(self):
         context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
+        context.check_hostname = True
         # create https connection
         if self.proxy_host and self.proxy_port:
             conn = HTTPSConnection(self.proxy_host, self.proxy_port, context=context)
