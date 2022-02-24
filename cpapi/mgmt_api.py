@@ -42,7 +42,7 @@ class APIClientArgs:
     def __init__(self, port=None, fingerprint=None, sid=None, server="127.0.0.1", http_debug_level=0,
                  api_calls=None, debug_file="", proxy_host=None, proxy_port=8080,
                  api_version=None, unsafe=False, unsafe_auto_accept=False, context="web_api", single_conn=True,
-                 user_agent="python-api-wrapper"):
+                 user_agent="python-api-wrapper", sync_frequency=2):
         self.port = port
         # management server fingerprint
         self.fingerprint = fingerprint
@@ -72,6 +72,8 @@ class APIClientArgs:
         self.single_conn = single_conn
         # User agent will be use in api call request header
         self.user_agent = user_agent
+        # Interval size in seconds of the task update
+        self.sync_frequency = sync_frequency
 
 
 class APIClient:
@@ -120,6 +122,8 @@ class APIClient:
         self.single_conn = api_client_args.single_conn
         # User agent will be use in api call request header
         self.user_agent = api_client_args.user_agent
+        # Interval size in seconds of the task update
+        self.sync_frequency = api_client_args.sync_frequency
 
     def __enter__(self):
         return self
@@ -529,7 +533,7 @@ class APIClient:
             if completed_tasks == total_tasks:
                 task_complete = True
             else:
-                time.sleep(2)  # Wait for two seconds
+                time.sleep(self.sync_frequency)  # Wait for sync_frequency seconds
 
         self.check_tasks_status(task_result)
         return task_result
