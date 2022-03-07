@@ -239,6 +239,11 @@ class APIClient:
             except (ValueError, subprocess.CalledProcessError):
                 port = self.get_port()
 
+            else:
+                # may be a non-standard port, update the configuration to reflect this,
+                # required for follow-up HTTPS connections
+                self.set_port(port)
+
         try:
             # This simple dict->cli format works only because the login command doesn't require
             # any complex parameters like objects and lists
