@@ -254,7 +254,8 @@ class APIClient:
             if domain:
                 new_payload += ["domain", domain]
             login_response = compatible_loads(subprocess.check_output(
-                [mgmt_cli_absolute_path, "login", "-r", "true", "-f", "json", "--port", str(port)] + new_payload))
+                [mgmt_cli_absolute_path, "login", "-r", "true", "-f", "json", "--port", str(port), "--user-agent",
+                 self.user_agent] + new_payload))
             self.sid = login_response["sid"]
             self.server = "127.0.0.1"
             self.domain = domain
