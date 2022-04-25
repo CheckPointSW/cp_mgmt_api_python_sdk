@@ -2,10 +2,11 @@ import setuptools
 from setuptools import setup
 
 setup(
-    name="cpapi",
+    name="cp_mgmt_api_python_sdk",
     version="1.3.0",
     author="API team",
     author_email="api_team@checkpoint.com",
+    license='Apache 2.0',
     description="Check Point Management API SDK",
     long_description="Check Point API Python Development Kit simplifies the usage of the Check Point Management APIs. "
                      "The kit contains the API library project, "
@@ -20,5 +21,6 @@ setup(
         "License :: OSI Approved :: Apache License",
         "Operating System :: OS Independent",
     ],
+    metadata_version="1.2",
 
 )
