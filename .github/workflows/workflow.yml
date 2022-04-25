@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+
 jobs:
   code-analysis:
     runs-on: ubuntu-latest
