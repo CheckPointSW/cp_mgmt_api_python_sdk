@@ -2,7 +2,7 @@ import setuptools
 from setuptools import setup
 
 setup(
-    name="cp_mgmt_api_python_sdk",
+    name="cp-mgmt-api-sdk",
     version="1.3.0",
     author="API team",
     author_email="api_team@checkpoint.com",
