@@ -12,7 +12,7 @@ setup(
                      "The kit contains the API library project, "
                      "and sample projects demonstrating the capabilities of the library. "
                      "The kit is python 2 and 3 compatible code.",
-    long_description_content_type="text",
+    long_description_content_type="text/plain",
     url="https://github.com/CheckPointSW/cp_mgmt_api_python_sdk.git",
     packages=setuptools.find_packages(),
     classifiers=[
