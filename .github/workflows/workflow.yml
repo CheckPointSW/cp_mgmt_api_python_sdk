@@ -1,8 +1,5 @@
 name: SourceGuard Code Analysis
-on:
-  push:
-    branches:
-      - master
+on: [push]
 
 jobs:
   code-analysis:
