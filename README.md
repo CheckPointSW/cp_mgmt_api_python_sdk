@@ -22,6 +22,10 @@ Install the SDK by using the pip tool or by downloading the repository.
 #### Install with pip
 Run:
 ```
+pip install cp-mgmt-api-sdk
+```
+Or:
+```
 pip install git+https://github.com/CheckPointSW/cp_mgmt_api_python_sdk
 ```
 ###### Note: you might be required to use "sudo" for this command.
@@ -47,7 +51,7 @@ pip install --upgrade git+https://github.com/CheckPointSW/cp_mgmt_api_python_sdk
 #### Uninstall
 Uninstall the SDK by using pip tool:
 ```
-pip uninstall cpapi
+pip uninstall cp-mgmt-api-sdk
 ```
 ###### Note: you might be required to use "sudo" for this command.
 
