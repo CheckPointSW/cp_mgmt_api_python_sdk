@@ -42,7 +42,7 @@ class APIClientArgs:
     def __init__(self, port=None, fingerprint=None, sid=None, server="127.0.0.1", http_debug_level=0,
                  api_calls=None, debug_file="", proxy_host=None, proxy_port=8080,
                  api_version=None, unsafe=False, unsafe_auto_accept=False, context="web_api", single_conn=True,
-                 user_agent="python-api-wrapper", sync_frequency=2):
+                 user_agent="python-api-wrapper", sync_frequency=2, cloud_mgmt_id=""):
         self.port = port
         # management server fingerprint
         self.fingerprint = fingerprint
@@ -74,6 +74,8 @@ class APIClientArgs:
         self.user_agent = user_agent
         # Interval size in seconds of the task update
         self.sync_frequency = sync_frequency
+        # Smart-1 Cloud management UID
+        self.cloud_mgmt_id = cloud_mgmt_id
 
 
 class APIClient:
@@ -124,6 +126,8 @@ class APIClient:
         self.user_agent = api_client_args.user_agent
         # Interval size in seconds of the task update
         self.sync_frequency = api_client_args.sync_frequency
+        # Smart-1 Cloud management UID
+        self.cloud_mgmt_id = api_client_args.cloud_mgmt_id
 
     def __enter__(self):
         return self
@@ -318,7 +322,18 @@ class APIClient:
 
         # init https connection. if single connection is True, use last connection
         conn = self.get_https_connection()
-        url = "/" + self.context + "/" + (("v" + str(self.api_version) + "/") if self.api_version else "") + command
+
+        url = ""
+        if self.cloud_mgmt_id != "":
+            url += "/" + self.cloud_mgmt_id
+
+        url += "/" + self.context
+
+        if self.api_version:
+            url += "/v" + str(self.api_version)
+
+        url += "/" + command
+
         response = None
         try:
             # Send the data to the server
