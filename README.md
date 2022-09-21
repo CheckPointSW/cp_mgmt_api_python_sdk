@@ -66,6 +66,7 @@ export PYTHONPATH=$PYTHONPATH:<“CP-SDK” FULL PATH>
 ```
 For example, if you copied the SDK to the path “/home/admin/” the command will be: <br>
 ```export PYTHONPATH=$PYTHONPATH:/home/admin/cp_mgmt_api_python_sdk/```
+###### Note: When downloading the repository, directory name will be cp_mgmt_api_python_sdk-master.
 
 ## Development Environment
 The kit is developed using Python versions 2.7 and 3.7
