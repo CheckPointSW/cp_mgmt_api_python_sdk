@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="cp-mgmt-api-sdk",
-    version="1.5.0",
+    version="1.6.0",
     author="API team",
     author_email="api_team@checkpoint.com",
     license='Apache 2.0',
