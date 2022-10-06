@@ -349,7 +349,7 @@ class APIClient:
                 res = APIResponse("", False, err_message=err_message)
             else:
                 res = APIResponse("", False, err_message=err)
-        except (http_client.CannotSendRequest, http_client.BadStatusLine, ConnectionAbortedError) as e:
+        except (http_client.CannotSendRequest, http_client.BadStatusLine, ConnectionAbortedError, BrokenPipeError, IOError) as e:
             self.conn = self.create_https_connection()
             self.conn.request("POST", url, _data, _headers)
             response = self.conn.getresponse()
