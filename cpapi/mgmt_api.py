@@ -179,8 +179,7 @@ class APIClient:
                 self.api_version = login_res.data["api-server-version"]
         return login_res
 
-    def login_with_api_key(self, api_key, continue_last_session=False, domain=None, read_only=False,
-              payload=None):
+    def login_with_api_key(self, api_key, continue_last_session=False, domain=None, read_only=False, payload=None):
         """
         performs a 'login' API call to the management server
 
@@ -349,7 +348,8 @@ class APIClient:
                 res = APIResponse("", False, err_message=err_message)
             else:
                 res = APIResponse("", False, err_message=err)
-        except (http_client.CannotSendRequest, http_client.BadStatusLine, ConnectionAbortedError, BrokenPipeError, IOError) as e:
+        except (http_client.CannotSendRequest, http_client.BadStatusLine,
+                ConnectionAbortedError, BrokenPipeError, IOError) as e:
             self.conn = self.create_https_connection()
             self.conn.request("POST", url, _data, _headers)
             response = self.conn.getresponse()
@@ -455,8 +455,8 @@ class APIClient:
         for key in container_keys:
             all_objects[key] = []
         iterations = 0  # number of times we've made an API call
-        limit = 50 # page size to get for each api call
-        offset = 0 # skip n objects in the database
+        limit = 50  # page size to get for each api call
+        offset = 0  # skip n objects in the database
         if payload is None:
             payload = {}
         else:
@@ -591,7 +591,7 @@ class APIClient:
         :return:
         """
         for task in task_result.data["tasks"]:
-             if task["status"] == "failed" or task["status"] == "partially succeeded" or task["status"] == "in progress":
+            if task["status"] == "failed" or task["status"] == "partially succeeded" or task["status"] == "in progress":
                 task_result.set_success_status(False)
                 break
 
@@ -610,7 +610,7 @@ class APIClient:
         local_fingerprint = self.read_fingerprint_from_file(self.server)
         server_fingerprint = self.get_server_fingerprint()
 
-        #Check if fingerprint is passed and matches
+        # Check if fingerprint is passed and matches
         if self.fingerprint == server_fingerprint:
             return True
 
