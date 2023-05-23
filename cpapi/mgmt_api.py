@@ -274,7 +274,7 @@ class APIClient:
         except (WindowsError) as err:
             raise APIClientException("Could not login as root:\n" + str(type(err)) + " - " + str(err))
 
-    def api_call(self, command, payload=None, sid=None, wait_for_task=True, timeout=-1):
+    def api_call(self, command, payload=None, sid=None, wait_for_task=True, timeout=-1, method="POST"):
         """
         performs a web-service API request to the management server
 
@@ -336,7 +336,7 @@ class APIClient:
         response = None
         try:
             # Send the data to the server
-            conn.request("POST", url, _data, _headers)
+            conn.request(method, url, _data, _headers)
             # Get the reply from the server
             response = conn.getresponse()
             res = APIResponse.from_http_response(response)
