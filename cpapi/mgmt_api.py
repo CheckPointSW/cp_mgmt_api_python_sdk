@@ -287,6 +287,7 @@ class APIClient:
                               when wait_for_task=False, it is up to the user to call the "show-task" API and check
                               the status of the command.
         :param timeout: Optional positive timeout (in seconds) before stop waiting for the task even if not completed.
+        :param method: The HTTP method to use. Defaults is `POST`.
         :return: APIResponse object
         :side-effects: updates the class's uid and server variables
         """
