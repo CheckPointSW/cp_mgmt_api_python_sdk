@@ -274,7 +274,7 @@ class APIClient:
         except (WindowsError) as err:
             raise APIClientException("Could not login as root:\n" + str(type(err)) + " - " + str(err))
 
-    def api_call(self, command, payload=None, sid=None, wait_for_task=True, timeout=-1):
+    def api_call(self, command, payload=None, sid=None, wait_for_task=True, timeout=-1, method="POST"):
         """
         performs a web-service API request to the management server
 
@@ -287,6 +287,7 @@ class APIClient:
                               when wait_for_task=False, it is up to the user to call the "show-task" API and check
                               the status of the command.
         :param timeout: Optional positive timeout (in seconds) before stop waiting for the task even if not completed.
+        :param method: The HTTP method to use. Defaults is `POST`.
         :return: APIResponse object
         :side-effects: updates the class's uid and server variables
         """
@@ -336,7 +337,7 @@ class APIClient:
         response = None
         try:
             # Send the data to the server
-            conn.request("POST", url, _data, _headers)
+            conn.request(method, url, _data, _headers)
             # Get the reply from the server
             response = conn.getresponse()
             res = APIResponse.from_http_response(response)
