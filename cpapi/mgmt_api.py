@@ -748,8 +748,8 @@ class APIClient:
         return ""
 
     def create_https_connection(self):
-        context = ssl.create_default_context()
-        context.check_hostname = True
+        context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS)
+        context.verify_mode = ssl.CERT_NONE
         # create https connection
         if self.proxy_host and self.proxy_port:
             conn = HTTPSConnection(self.proxy_host, self.proxy_port, context=context)
@@ -784,7 +784,7 @@ class HTTPSConnection(http_client.HTTPSConnection):
     """
     def connect(self):
         http_client.HTTPConnection.connect(self)
-        self.sock = ssl.wrap_socket(self.sock, self.key_file, self.cert_file, cert_reqs=ssl.CERT_NONE)
+        self.sock = self._context.wrap_socket(self.sock, server_hostname=self.host)
 
     def get_fingerprint_hash(self):
         if self.sock is None:
