@@ -25,6 +25,7 @@ from cpapi import APIClient, APIClientArgs
 def main():
     # getting details from the user
     api_server = input("Enter server IP address or hostname:")
+    port = input("Enter port(443 by default): ")
     username = input("Enter username: ")
 
     if sys.stdin.isatty():
@@ -33,7 +34,7 @@ def main():
         print("Attention! Your password will be shown on the screen!")
         password = input("Enter password: ")
 
-    client_args = APIClientArgs(server=api_server)
+    client_args = APIClientArgs(server=api_server,port=port)
 
     with APIClient(client_args) as client:
 
