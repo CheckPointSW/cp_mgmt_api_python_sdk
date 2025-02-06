@@ -368,7 +368,10 @@ class APIClient:
         # would not appear as plaintext in the debug file.
         if command == "login":
             json_data = compatible_loads(_data)
-            json_data["password"] = "****"
+            if "password" in json_data:
+                json_data["password"] = "****"
+            if "api-key" in json_data:
+                json_data["api-key"] = "****"
             _data = json.dumps(json_data)
 
         if self.debug_file:
