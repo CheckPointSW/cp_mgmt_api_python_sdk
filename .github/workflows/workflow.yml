@@ -5,9 +5,6 @@ on:
   - pull_request
 
 jobs:
-  code-analysis:
-    uses: CheckPointSW/org-templates/.github/workflows/code-analysis.yml@main
-    secrets: inherit
 
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI
