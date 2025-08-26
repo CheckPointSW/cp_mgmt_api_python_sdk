@@ -2,10 +2,10 @@
 # cp_management_api.py
 # version 1.1
 #
-# A library for communicating with Check Point's management server using [2.7.9 < python < 3]
+# A library for communicating with Check Point's management server
 # written by: Check Point software technologies inc.
 # October 2016
-# tested with Check Point R80 (tested with take hero2 198)
+# tested with Check Point R80 and above (tested with take hero2 198)
 #
 
 from __future__ import print_function
